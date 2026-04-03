@@ -1,0 +1,282 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Donor Dashboard | BloodCare</title>
+  <link rel="stylesheet" th:href="@{/css/common.css}">
+  <link rel="stylesheet" th:href="@{/css/dashboard.css}">
+  <script th:src="@{/js/donor-dashboard.js}" defer></script>
+</head>
+<body>
+<div class="page-bg dashboard-page">
+  <header class="navbar">
+    <div class="logo">BloodCare</div>
+    <nav class="dashboard-nav">
+      <a th:href="@{/}">Home</a>
+      <a th:href="@{/medicine}">Medicines</a>
+      <a th:href="@{/leaderboard}">Leaderboard</a>
+      <a th:href="@{/about}">About</a>
+      <a th:href="@{/donor-profile}">My Profile</a>
+      <button class="btn btn-ghost logout-btn" onclick="logout()">Logout</button>
+    </nav>
+  </header>
+
+  <section class="dashboard-wrapper">
+    <main class="dashboard-main">
+      <section class="dashboard-hero surface-card" data-reveal>
+        <div class="dashboard-hero__copy">
+          <span class="eyebrow">Donor command center</span>
+          <h1 id="welcomeText">Welcome back</h1>
+          <p>
+            Review your donation momentum, eligibility window, certificates, and
+            nearby requests from one dashboard.
+          </p>
+        </div>
+
+        <div class="dashboard-hero__visual">
+          <div class="readiness-ring" id="readinessRing" style="--ring-progress:0.75;">
+            <div class="readiness-ring__inner">
+              <span id="eligibilityPercent">0%</span>
+              <small>Readiness</small>
+            </div>
+          </div>
+
+          <div class="hero-mini-metrics">
+            <article class="hero-mini-metric">
+              <span>Current streak</span>
+              <strong id="donationStreak">0</strong>
+            </article>
+            <article class="hero-mini-metric">
+              <span>Donor level</span>
+              <strong id="donorLevel">Starter</strong>
+            </article>
+            <article class="hero-mini-metric">
+              <span>Countdown</span>
+              <strong id="readinessState">Checking...</strong>
+            </article>
+          </div>
+        </div>
+
+        <div class="dashboard-hero__actions">
+          <a th:href="@{/visit}" class="btn btn-main">Request Visit</a>
+          <a th:href="@{/receiver-form}" class="btn btn-main btn-secondary">Need Blood?</a>
+          <a th:href="@{/visit-history}" class="btn btn-outline">View History</a>
+        </div>
+      </section>
+
+      <div class="stats-grid">
+        <div class="stat-box" data-reveal><h4>Total Donations</h4><p id="totalDonations">0</p></div>
+        <div class="stat-box" data-reveal><h4>Total Units</h4><p id="totalUnits">0</p></div>
+        <div class="stat-box" data-reveal><h4>Last Donation</h4><p id="lastDonation">Not Yet</p></div>
+        <div class="stat-box status" data-reveal><h4>Status</h4><p id="status">Eligible</p></div>
+      </div>
+
+      <section class="dashboard-glance" data-reveal>
+        <article class="info-section glance-card">
+          <div class="section-head">
+            <span class="section-kicker">Readiness</span>
+            <h2>Donation momentum</h2>
+          </div>
+
+          <div class="glance-card__layout">
+            <div>
+              <p id="eligibilitySummary" class="glance-summary">Checking your eligibility rhythm...</p>
+              <div id="eligibilityCountdown" class="countdown-pill">Loading your next step...</div>
+            </div>
+
+            <div class="milestone-panel">
+              <div class="milestone-panel__head">
+                <span>Level progress</span>
+                <strong id="donorLevelLabel">Starter</strong>
+              </div>
+              <div class="milestone-track">
+                <span id="donorLevelProgressBar" style="width:0%;"></span>
+              </div>
+              <p id="donorMilestoneText">Complete your first donation to unlock your next level.</p>
+            </div>
+          </div>
+        </article>
+
+        <article class="info-section glance-card glance-card--highlight">
+          <div class="section-head">
+            <span class="section-kicker">Focus</span>
+            <h2>What to do next</h2>
+          </div>
+
+          <div class="focus-list">
+            <div class="focus-item">
+              <span class="focus-item__label">Eligibility</span>
+              <strong id="focusEligibility">Loading...</strong>
+            </div>
+            <div class="focus-item">
+              <span class="focus-item__label">Priority</span>
+              <strong id="focusPriority">Loading...</strong>
+            </div>
+            <div class="focus-item">
+              <span class="focus-item__label">Milestone</span>
+              <strong id="focusMilestone">Loading...</strong>
+            </div>
+          </div>
+        </article>
+      </section>
+
+      <div class="dashboard-split">
+        <section class="info-section info-section--feature" data-reveal>
+          <div class="section-head">
+            <span class="section-kicker">Ranking</span>
+            <h2>Your priority score</h2>
+          </div>
+
+          <div class="priority-layout">
+            <div class="priority-metric">
+              <p>Donor priority ranking</p>
+              <strong id="priorityScore">-</strong>
+              <span id="priorityLevel">Loading...</span>
+            </div>
+
+            <div class="priority-factors">
+              <p>Key factors</p>
+              <ul>
+                <li>Donation consistency</li>
+                <li>Total units donated</li>
+                <li>Current eligibility status</li>
+              </ul>
+            </div>
+          </div>
+        </section>
+
+        <section class="info-section" data-reveal>
+          <div class="section-head">
+            <span class="section-kicker">Eligibility</span>
+            <h2>Smart eligibility check</h2>
+          </div>
+
+          <div id="eligibilityDetails" class="detail-stack">
+            <div class="detail-card detail-card--neutral">
+              <p>Loading eligibility information...</p>
+            </div>
+          </div>
+        </section>
+      </div>
+
+      <section class="info-section" data-reveal>
+        <div class="section-head">
+          <span class="section-kicker">Recognition</span>
+          <h2>My achievements and badges</h2>
+        </div>
+
+        <div id="latestBadgeHighlight" class="badge-highlight">
+          <div class="empty-state">Your newest badge highlight will appear here.</div>
+        </div>
+
+        <div id="badgesContainer" class="badge-grid">
+          <div class="empty-state">Loading badges...</div>
+        </div>
+
+        <div id="nextBadgeContainer" class="progress-panel">
+          <p><strong>Next badge:</strong> <span id="nextBadgeText">Loading...</span></p>
+          <div id="nextBadgeProgress"></div>
+        </div>
+      </section>
+
+      <div class="dashboard-split dashboard-split--compact">
+        <section class="info-section" data-reveal>
+          <div class="section-head">
+            <span class="section-kicker">Planning</span>
+            <h2>Next donation eligibility</h2>
+          </div>
+
+          <p id="nextEligible">You are currently eligible to donate blood.</p>
+        </section>
+
+        <section class="info-section" id="matchingRequestsSection" data-reveal>
+          <div class="section-head">
+            <span class="section-kicker">Response queue</span>
+            <h2>Requests near you</h2>
+          </div>
+
+          <p class="section-copy">Priority cards below surface urgent needs, live response counts, and a quick way to accept or decline.</p>
+
+          <div id="matchingRequests" class="request-list">
+            <div class="empty-state">Loading requests...</div>
+          </div>
+        </section>
+      </div>
+
+      <section class="info-section" data-reveal>
+        <div class="section-head">
+          <span class="section-kicker">History</span>
+          <h2>Recent activity</h2>
+        </div>
+
+        <table class="activity-table">
+          <thead><tr><th>Date</th><th>Hospital</th><th>Units</th><th>Status</th></tr></thead>
+          <tbody id="activityBody"><tr><td colspan="4">Loading...</td></tr></tbody>
+        </table>
+      </section>
+
+      <section class="certificate-section" data-reveal>
+        <div class="section-head">
+          <span class="section-kicker">Documents</span>
+          <h2>My donation certificates</h2>
+        </div>
+
+        <div id="certificateHighlight" class="certificate-highlight">
+          <div class="empty-state">Complete a donation to unlock a shareable certificate snapshot.</div>
+        </div>
+
+        <div id="certificatesContainer">
+          <table class="activity-table">
+            <thead><tr><th>Certificate No.</th><th>Hospital</th><th>Date</th><th>Units</th><th>Action</th></tr></thead>
+            <tbody id="certificatesBody"><tr><td colspan="5" style="text-align:center;padding:20px;color:#999;">No certificates yet</td></tr></tbody>
+          </table>
+        </div>
+      </section>
+
+      <div class="dashboard-split dashboard-split--lower">
+        <section class="info-section" data-reveal>
+          <div class="section-head">
+            <span class="section-kicker">Health</span>
+            <h2>Donor health guidelines</h2>
+          </div>
+
+          <ul class="guidelines">
+            <li>Drink plenty of water before donation.</li>
+            <li>Minimum recommended weight: 50 kg.</li>
+            <li>Donation gap: 90 days for males, 120 days for females.</li>
+            <li>Avoid smoking just before donation.</li>
+          </ul>
+        </section>
+
+        <section class="info-section" data-reveal>
+          <div class="reward-section-header">
+            <div>
+              <span class="section-kicker">Rewards</span>
+              <h2>My reward coupons</h2>
+            </div>
+            <button class="btn btn-main btn-small" onclick="generateNewReward()">Get Random Reward</button>
+          </div>
+
+          <p class="section-copy">Earn rewards with every completed donation.</p>
+
+          <div id="activeRewardsContainer">
+            <h3 class="subsection-title">Available rewards</h3>
+            <div class="reward-grid" id="activeRewardsGrid">
+              <div class="empty-state">No active rewards yet. Donate blood to earn rewards.</div>
+            </div>
+          </div>
+
+          <div id="redeemedRewardsContainer" class="redeemed-section" style="display:none;">
+            <h3 class="subsection-title">Redeemed rewards</h3>
+            <div class="reward-grid reward-grid--redeemed" id="redeemedRewardsGrid"></div>
+          </div>
+        </section>
+      </div>
+    </main>
+  </section>
+</div>
+<script th:src="@{/js/chatbot-widget.js}"></script>
+<script th:src="@{/js/toast.js}"></script>
+</body>
+</html>

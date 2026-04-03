@@ -1,0 +1,86 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<head>
+  <meta charset="UTF-8">
+  <title>About Us | BloodCare</title>
+  <link rel="stylesheet" href="css/common.css">
+  <link rel="stylesheet" href="css/about.css">
+</head>
+<body>
+
+<header class="navbar">
+  <div class="logo">BloodCare</div>
+  <nav id="mainNav">
+    <a th:href="@{/}">Home</a>
+    <a th:href="@{/about}">About</a>
+    <a th:href="@{/donor-dashboard}">Dashboard</a>
+    <a th:href="@{/donor-profile}">My Profile</a>
+    <a th:href="@{/leaderboard}">Leaderboard</a>
+    <a th:href="@{/login}">Login</a>
+    <a class="btn" th:href="@{/signup}">Sign Up</a>
+  </nav>
+</header>
+
+<section class="about-hero">
+  <h1>About BloodCare</h1>
+  <p>Connecting donors and patients to save lives efficiently and safely.</p>
+</section>
+
+<section class="about-content">
+  <div class="about-card">
+    <div class="icon" style="font-size:2em;">&#127919;</div>
+    <h3>Our Mission</h3>
+    <p>To build a fast, reliable, and life-saving blood donation platform where donors and patients connect instantly during emergencies.</p>
+  </div>
+
+  <div class="about-card">
+    <div class="icon" style="font-size:2em;">&#128737;&#65039;</div>
+    <h3>Verified &amp; Trusted Donors</h3>
+    <p>Every donor is verified through comprehensive eligibility checks to ensure safety and authentic emergency response.</p>
+  </div>
+
+  <div class="about-card">
+    <div class="icon" style="font-size:2em;">&#127941;</div>
+    <h3>Rewards &amp; Certificates</h3>
+    <p>Active donors earn digital certificates, reward points, and achievement badges after successful donations.</p>
+  </div>
+
+  <div class="about-card">
+    <div class="icon" style="font-size:2em;">&#127942;</div>
+    <h3>Leaderboard &amp; Recognition</h3>
+    <p>Top donors are featured publicly. Earn points through donations and consistency rewards to reach higher tiers.</p>
+  </div>
+
+  <div class="about-card">
+    <div class="icon" style="font-size:2em;">&#128065;&#65039;</div>
+    <h3>Our Vision</h3>
+    <p>To become a trusted national platform ensuring blood availability anytime, anywhere. Every life matters.</p>
+  </div>
+
+  <div class="about-card">
+    <div class="icon" style="font-size:2em;">&#128260;</div>
+    <h3>How It Works</h3>
+    <p>Register -> request visit -> donate blood -> earn rewards -> get recognized on leaderboard.</p>
+  </div>
+</section>
+
+<section class="about-experience">
+  <div class="about-experience-wrap">
+    <h2>The BloodCare Experience</h2>
+    <div class="experience-grid">
+      <div class="experience-card"><div class="step">1</div><h4>Register</h4><p>Create profile with blood and health details.</p></div>
+      <div class="experience-card"><div class="step">2</div><h4>Find Hospitals</h4><p>Get nearby hospitals with location support.</p></div>
+      <div class="experience-card"><div class="step">3</div><h4>Schedule Visit</h4><p>Book a slot based on your availability.</p></div>
+      <div class="experience-card"><div class="step">4</div><h4>Donate</h4><p>Donate blood and help save multiple lives.</p></div>
+      <div class="experience-card"><div class="step">5</div><h4>Earn Rewards</h4><p>Get certificates, points, and badge unlocks.</p></div>
+      <div class="experience-card"><div class="step">6</div><h4>Recognition</h4><p>Grow rank and become a BloodCare hero.</p></div>
+    </div>
+  </div>
+</section>
+
+<footer>
+  <p>&copy; 2026 BloodCare | All Rights Reserved</p>
+</footer>
+
+</body>
+</html>

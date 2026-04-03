@@ -1,0 +1,142 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">  <meta name="viewport" content="width=device-width, initial-scale=1.0">    <title>Leaderboard - Blood Donation Heroes</title>
+    <link rel="stylesheet" th:href="@{/css/common.css}">
+    <link rel="stylesheet" th:href="@{/css/leaderboard.css}">
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700&display=swap" rel="stylesheet">
+</head>
+<body>
+
+<div id="leaderboardDisabled" style="display:none;text-align:center;padding:60px 20px;font-size:1.3em;color:#b91c1c;font-weight:600;max-width:600px;margin:60px auto 0 auto;background:#fff3f3;border-radius:12px;box-shadow:0 2px 12px #f87171a0;">
+    🚫 The leaderboard is currently disabled by the admin.
+</div>
+
+<!-- Back to Home Button -->
+<a th:href="@{/}" class="back-btn">← Back to Home</a>
+
+<!-- Header -->
+<div class="header" id="leaderboardHeader">
+    <h2>🏆 Leaderboard</h2>
+    <h3>Our Blood Donation Heroes</h3>
+    <p>Recognize and reward the exceptional donors who have saved countless lives through their selfless donations.</p>
+</div>
+
+<!-- Top 3 Container -->
+<div class="top-3-container" id="top3Container"></div>
+
+<!-- Filter Buttons -->
+<div class="filter-section" id="filterSection">
+    <button class="filter-btn active" data-filter="all">All Donors</button>
+    <button class="filter-btn" data-filter="gold">🥇 Gold Tier</button>
+    <button class="filter-btn" data-filter="silver">🥈 Silver Tier</button>
+    <button class="filter-btn" data-filter="bronze">🥉 Bronze Tier</button>
+</div>
+
+<!-- Empty State -->
+<div class="empty-state" id="emptyState" style="display: none;">
+    <p>No donors yet. Be the first hero! 🦸</p>
+    <a th:href="@{/donor-form}"><button class="cta-btn">Start Donating</button></a>
+</div>
+
+<!-- Donors Grid -->
+<div class="donors-grid" id="donorsGrid"></div>
+
+<!-- Summary Stats -->
+<div class="summary-stats" id="summaryStats">
+    <div class="stat-box">
+        <div class="stat-icon">👥</div>
+        <div class="stat-content">
+            <div class="stat-value" id="totalDonors">0</div>
+            <div class="stat-label">Total Donors</div>
+        </div>
+    </div>
+    <div class="stat-box">
+        <div class="stat-icon">🩸</div>
+        <div class="stat-content">
+            <div class="stat-value" id="totalDonations">0</div>
+            <div class="stat-label">Total Donations</div>
+        </div>
+    </div>
+    <div class="stat-box">
+        <div class="stat-icon">⭐</div>
+        <div class="stat-content">
+            <div class="stat-value" id="totalPoints">0</div>
+            <div class="stat-label">Total Points Earned</div>
+        </div>
+    </div>
+</div>
+
+<!-- How It Works Section -->
+<div class="how-it-works" id="howItWorks" style="background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); color: white; padding: 40px 30px; border-radius: 15px; margin: 40px 0; max-width: 900px; margin-left: auto; margin-right: auto;">
+    <h3 style="color: white; text-align: center; margin-top: 0; margin-bottom: 30px; font-size: 24px;">How Points Are Calculated 🎯</h3>
+    <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 20px;">
+        <div style="background: rgba(255,255,255,0.1); padding: 20px; border-radius: 10px; border-left: 4px solid #fbbf24;">
+            <h4 style="margin-top: 0; color: #fbbf24;">💉 Donation Points</h4>
+            <p style="margin: 0; font-size: 13px; line-height: 1.8;">100 points per unit of blood donated</p>
+            <p style="margin: 10px 0 0 0; font-size: 12px; opacity: 0.9; font-style: italic;">Example: 1 unit = 100 points</p>
+        </div>
+        <div style="background: rgba(255,255,255,0.1); padding: 20px; border-radius: 10px; border-left: 4px solid #60a5fa;">
+            <h4 style="margin-top: 0; color: #60a5fa;">🎁 Age Bonus Points</h4>
+            <p style="margin: 0; font-size: 13px; line-height: 1.8;">5 points per year of age (18-65 years)</p>
+            <p style="margin: 10px 0 0 0; font-size: 12px; opacity: 0.9; font-style: italic;">Example: Age 30 = 60 points (30-18) × 5</p>
+        </div>
+        <div style="background: rgba(255,255,255,0.1); padding: 20px; border-radius: 10px; border-left: 4px solid #34d399;">
+            <h4 style="margin-top: 0; color: #34d399;">⭐ Donation Bonus</h4>
+            <p style="margin: 0; font-size: 13px; line-height: 1.8;">200 points per successful blood donation</p>
+            <p style="margin: 10px 0 0 0; font-size: 12px; opacity: 0.9; font-style: italic;">Example: 2 donations = 400 bonus points</p>
+        </div>
+        <div style="background: rgba(255,255,255,0.1); padding: 20px; border-radius: 10px; border-left: 4px solid #f87171;">
+            <h4 style="margin-top: 0; color: #f87171;">🏆 Total Points</h4>
+            <p style="margin: 0; font-size: 13px; line-height: 1.8;">Sum of all above categories determines your rank</p>
+            <p style="margin: 10px 0 0 0; font-size: 12px; opacity: 0.9; font-style: italic;">Higher points = Higher rank on leaderboard</p>
+        </div>
+    </div>
+    <div style="margin-top: 25px; padding-top: 25px; border-top: 1px solid rgba(255,255,255,0.2); text-align: center;">
+        <h4 style="color: #fbbf24; margin-top: 0; margin-bottom: 15px;">🎖️ Donor Tiers</h4>
+        <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(150px, 1fr)); gap: 15px;">
+            <div>
+                <p style="margin: 0; font-weight: bold; color: #fbbf24;">🥇 Gold Tier</p>
+                <p style="margin: 5px 0 0 0; font-size: 12px;">10+ units donated</p>
+            </div>
+            <div>
+                <p style="margin: 0; font-weight: bold; color: #c7d2fe;">🥈 Silver Tier</p>
+                <p style="margin: 5px 0 0 0; font-size: 12px;">5-9 units donated</p>
+            </div>
+            <div>
+                <p style="margin: 0; font-weight: bold; color: #fed7aa;">🥉 Bronze Tier</p>
+                <p style="margin: 5px 0 0 0; font-size: 12px;">1-4 units donated</p>
+            </div>
+            <div>
+                <p style="margin: 0; font-weight: bold; color: #e5e7eb;">🌟 Rookie</p>
+                <p style="margin: 5px 0 0 0; font-size: 12px;">0 units (starting)</p>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- CTA Section -->
+<div class="cta-section" id="ctaSection">
+    <h3>Want to Join the Leaderboard?</h3>
+    <p>Every donation counts! Start your journey as a blood donation hero today.</p>
+    <a th:href="@{/donor-form}"><button class="cta-btn large">🩸 Donate Blood Now</button></a>
+</div>
+
+<script th:src="@{/js/leaderboard.js}"></script>
+<script>
+// Hide leaderboard if admin disables it
+fetch('/api/admin/public-config').then(r=>r.json()).then(cfg=>{
+    const ctrls = (cfg && cfg.controls) ? cfg.controls : {};
+    if(ctrls.showLeaderboard===false || ctrls.maintenanceMode===true){
+        document.getElementById('leaderboardDisabled').style.display='block';
+        ['leaderboardHeader','top3Container','filterSection','emptyState','donorsGrid','summaryStats','howItWorks','ctaSection'].forEach(id=>{
+            var el=document.getElementById(id);if(el)el.style.display='none';
+        });
+    }
+});
+</script>
+
+<!-- Chatbot Widget -->
+<script th:src="@{/js/chatbot-widget.js}"></script>
+</body>
+</html>

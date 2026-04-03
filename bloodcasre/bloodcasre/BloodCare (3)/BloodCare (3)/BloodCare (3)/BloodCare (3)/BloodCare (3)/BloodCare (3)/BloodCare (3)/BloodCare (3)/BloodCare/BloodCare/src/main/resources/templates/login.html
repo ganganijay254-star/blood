@@ -1,0 +1,106 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Login | BloodCare</title>
+  <link rel="stylesheet" th:href="@{/css/common.css}">
+  <link rel="stylesheet" th:href="@{/css/auth.css}">
+</head>
+<body class="auth-page">
+<div class="page-bg">
+  <header class="navbar">
+    <div class="logo">BloodCare</div>
+    <nav>
+      <a th:href="@{/}">Home</a>
+      <a th:href="@{/about}">About</a>
+    </nav>
+  </header>
+
+  <section class="auth-stage">
+    <div class="auth-side">
+      <span class="eyebrow">Secure donor access</span>
+      <h1>Return to the dashboard that keeps every donation cycle moving.</h1>
+      <p>
+        Review eligibility, recent activity, rewards, and visit updates from one
+        place while keeping the existing backend exactly as it is.
+      </p>
+
+      <div class="auth-highlights">
+        <article class="auth-note">
+          <strong>Track every visit</strong>
+          <span>From request submission to completed certificate.</span>
+        </article>
+        <article class="auth-note">
+          <strong>Stay response-ready</strong>
+          <span>See nearby requests and your next donation window clearly.</span>
+        </article>
+        <article class="auth-note">
+          <strong>Keep your progress visible</strong>
+          <span>Badges, rewards, and recent impact stay in one place.</span>
+        </article>
+      </div>
+    </div>
+
+    <form class="auth-box auth-neo" id="loginForm" novalidate>
+      <div class="card-head">
+        <span class="badge">Sign In</span>
+        <h2>Welcome back</h2>
+        <p>Use your BloodCare account to continue.</p>
+      </div>
+
+      <div class="input-group">
+        <input type="email" id="loginEmail" required autocomplete="email">
+        <label>Email Address</label>
+      </div>
+
+      <div class="input-group password-group">
+        <input type="password" id="loginPassword" required autocomplete="current-password">
+        <label>Password</label>
+        <button type="button" class="show-hide" onclick="togglePassword('loginPassword')">Show</button>
+      </div>
+
+      <div class="forgot">
+        <a href="#" onclick="openForgot(); return false;">Forgot Password?</a>
+      </div>
+
+      <div class="btn-group">
+        <button type="submit" class="btn btn-main">Login</button>
+      </div>
+
+      <div class="divider">
+        <span>Or continue with</span>
+      </div>
+
+      <a href="/oauth2/authorization/google" class="btn btn-google">Continue with Google</a>
+
+      <p class="switch">
+        Do not have an account?
+        <a th:href="@{/signup}">Create one</a>
+      </p>
+
+      <div class="auth-foot">
+        <a th:href="@{/}" class="back-link">Back to home</a>
+      </div>
+    </form>
+  </section>
+</div>
+
+<div class="forgot-modal" id="forgotModal">
+  <div class="forgot-card">
+    <h3>Reset Password</h3>
+    <p>Enter your registered email</p>
+
+    <input type="email" id="forgotEmail" placeholder="Email Address">
+
+    <div class="btn-group">
+      <button class="btn btn-main" onclick="sendReset()">Send Link</button>
+      <button class="btn btn-ghost" onclick="closeForgot()">Cancel</button>
+    </div>
+  </div>
+</div>
+
+<script th:src="@{/js/auth.js}"></script>
+<script th:src="@{/js/toast.js}"></script>
+</body>
+</html>

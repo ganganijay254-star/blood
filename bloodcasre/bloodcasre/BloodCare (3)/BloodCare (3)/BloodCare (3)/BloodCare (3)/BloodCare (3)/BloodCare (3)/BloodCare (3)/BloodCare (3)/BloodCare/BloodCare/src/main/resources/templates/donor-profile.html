@@ -1,0 +1,342 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>My Profile | BloodCare</title>
+  <link rel="stylesheet" th:href="@{/css/common.css}">
+  <link rel="stylesheet" th:href="@{/css/dashboard.css}">
+  <link rel="stylesheet" th:href="@{/css/profile.css}">
+</head>
+<body>
+<div class="page-bg">
+  <div class="blood-overlay"></div>
+
+  <header class="navbar">
+    <div class="logo">BloodCare</div>
+    <nav class="dashboard-nav">
+      <a th:href="@{/}">Home</a>
+      <a th:href="@{/medicine}">Medicines</a>
+      <a th:href="@{/leaderboard}">Leaderboard</a>
+      <a th:href="@{/about}">About</a>
+      <a th:href="@{/donor-dashboard}">Dashboard</a>
+      <a th:href="@{/donor-profile}" class="active">My Profile</a>
+      <button class="btn btn-ghost logout-btn" onclick="logout()">Logout</button>
+    </nav>
+  </header>
+
+  <section id="profileContent" class="dashboard-wrapper">
+    <main class="dashboard-main profile-main">
+      <section class="dashboard-hero surface-card">
+        <div class="dashboard-hero__copy">
+          <span class="eyebrow">Account Center</span>
+          <h1>My Profile</h1>
+          <p>
+            Keep your personal details current so donation updates, request
+            matching, and emergency coordination stay accurate.
+          </p>
+        </div>
+
+        <div class="dashboard-hero__actions">
+          <a th:href="@{/donor-dashboard}" class="btn btn-outline">Dashboard</a>
+          <a th:href="@{/receiver-form}" class="btn btn-main btn-secondary">Need Blood?</a>
+        </div>
+      </section>
+
+      <div class="profile-top-grid">
+        <section class="info-section profile-summary-panel">
+          <div class="section-head">
+            <span class="section-kicker">Profile Photo</span>
+            <h2>Identity snapshot</h2>
+          </div>
+
+          <div class="photo-section">
+            <div id="photoContainer">
+              <div class="photo-placeholder">IMG</div>
+            </div>
+
+            <div class="photo-copy">
+              <strong id="userEmail">Loading...</strong>
+              <p>Use a clear photo so hospitals and support teams can identify your account quickly.</p>
+            </div>
+
+            <div class="photo-input-wrapper">
+              <input type="file" id="photoInput" accept="image/*">
+              <button type="button" class="btn btn-main photo-btn" onclick="document.getElementById('photoInput').click()">
+                Upload Photo
+              </button>
+            </div>
+          </div>
+        </section>
+
+        <section class="info-section info-section--feature">
+          <div class="section-head">
+            <span class="section-kicker">Quick Actions</span>
+            <h2>Stay ready to help</h2>
+          </div>
+
+          <p class="profile-feature-copy">
+            From here you can jump back to your donor dashboard or create a blood
+            request using the same receiver-side flow as the rest of the app.
+          </p>
+
+          <div class="profile-quick-actions">
+            <a th:href="@{/donor-dashboard}" class="btn btn-main">Go to Dashboard</a>
+            <a th:href="@{/receiver-form}" class="btn btn-main btn-secondary">Request Blood</a>
+            <button type="button" class="btn-outline" onclick="window.location.href='/'">Back to Home</button>
+          </div>
+        </section>
+      </div>
+
+      <section class="info-section">
+        <div class="reward-section-header">
+          <div>
+            <span class="section-kicker">Personal Details</span>
+            <h2>Profile information</h2>
+          </div>
+          <button id="editProfileBtn" class="btn-outline btn-small" type="button">Edit Profile</button>
+        </div>
+
+        <div class="profile-grid">
+          <div class="profile-item">
+            <label>Full Name</label>
+            <div class="value" id="profileName">--</div>
+            <input id="editName" style="display:none;" maxlength="80">
+          </div>
+
+          <div class="profile-item">
+            <label>Email Address</label>
+            <div class="value" id="profileEmail">--</div>
+          </div>
+
+          <div class="profile-item">
+            <label>Mobile Number</label>
+            <div class="value" id="profileMobile">--</div>
+            <input id="editMobile" style="display:none;" maxlength="10" oninput="this.value=this.value.replace(/[^0-9]/g,'')">
+          </div>
+
+          <div class="profile-item">
+            <label>Role</label>
+            <div class="value" id="profileRole">USER</div>
+          </div>
+        </div>
+      </section>
+    </main>
+  </section>
+</div>
+
+<script>
+  document.addEventListener("DOMContentLoaded", () => {
+    loadUserProfile();
+  });
+
+  function renderProfilePhoto(photoBase64) {
+    const photoContainer = document.getElementById("photoContainer");
+    if (photoBase64) {
+      photoContainer.innerHTML = `<img src="${photoBase64}" class="profile-photo" alt="Profile Photo" onerror="this.onerror=null;this.parentElement.innerHTML='<div class=&quot;photo-placeholder&quot;>IMG</div>';">`;
+      return;
+    }
+    photoContainer.innerHTML = `<div class="photo-placeholder">IMG</div>`;
+  }
+
+  async function loadUserProfile() {
+    try {
+      const response = await fetch("/api/user/profile", {
+        credentials: "include"
+      });
+
+      if (!response.ok) {
+        window.location.href = "/login";
+        return;
+      }
+
+      const user = await response.json();
+
+      document.getElementById("userEmail").innerText = user.email || "--";
+      document.getElementById("profileName").innerText = user.name || "--";
+      document.getElementById("profileEmail").innerText = user.email || "--";
+      document.getElementById("profileMobile").innerText = user.mobile || "--";
+      document.getElementById("profileRole").innerText = user.role || "USER";
+
+      renderProfilePhoto(user.profilePhoto || "");
+    } catch (error) {
+      console.log("Error loading profile:", error);
+    }
+  }
+
+  document.getElementById("photoInput").addEventListener("change", async (e) => {
+    const file = e.target.files[0];
+    if (!file) return;
+
+    if (!file.type || !file.type.startsWith("image/")) {
+      if (typeof localShow === "function") localShow("Please select a valid image file", "error");
+      else if (window.showToast) window.showToast("Please select a valid image file", "error");
+      else alert("Please select a valid image file");
+      e.target.value = "";
+      return;
+    }
+
+    if (file.size > 1 * 1024 * 1024) {
+      if (typeof localShow === "function") localShow("Image size must be less than 1MB", "error");
+      else if (window.showToast) window.showToast("Image size must be less than 1MB", "error");
+      else alert("Image size must be less than 1MB");
+      e.target.value = "";
+      return;
+    }
+
+    const canvas = document.createElement("canvas");
+    const ctx = canvas.getContext("2d");
+    const img = new Image();
+
+    img.onload = async () => {
+      const maxSize = 400;
+      let width = img.width;
+      let height = img.height;
+
+      if (width > height) {
+        if (width > maxSize) {
+          height = Math.round((height * maxSize) / width);
+          width = maxSize;
+        }
+      } else if (height > maxSize) {
+        width = Math.round((width * maxSize) / height);
+        height = maxSize;
+      }
+
+      canvas.width = width;
+      canvas.height = height;
+      ctx.drawImage(img, 0, 0, width, height);
+
+      const base64 = canvas.toDataURL("image/jpeg", 0.7);
+
+      try {
+        const response = await fetch("/api/user/upload-photo", {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/x-www-form-urlencoded"
+          },
+          credentials: "include",
+          body: "photoBase64=" + encodeURIComponent(base64)
+        });
+
+        const data = await response.json();
+
+        if (data.success) {
+          if (typeof localShow === "function") localShow("Photo uploaded successfully", "success");
+          else if (window.showToast) window.showToast("Photo uploaded successfully", "success");
+          else alert("Photo uploaded successfully");
+          renderProfilePhoto(base64);
+          e.target.value = "";
+          loadUserProfile();
+        } else {
+          if (typeof localShow === "function") localShow("Error: " + data.message, "error");
+          else if (window.showToast) window.showToast("Error: " + data.message, "error");
+          else alert("Error: " + data.message);
+        }
+      } catch (error) {
+        if (typeof localShow === "function") localShow("Error uploading photo: " + error.message, "error");
+        else if (window.showToast) window.showToast("Error uploading photo: " + error.message, "error");
+        else alert("Error uploading photo: " + error.message);
+      }
+    };
+
+    img.src = URL.createObjectURL(file);
+  });
+
+  function logout() {
+    const doLogout = () => {
+      fetch("/api/auth/logout", {
+        method: "POST",
+        credentials: "include"
+      }).then(() => {
+        window.location.href = "/login";
+      });
+    };
+
+    if (typeof showConfirm === "function") {
+      showConfirm("Are you sure you want to logout?", doLogout);
+    } else if (confirm("Are you sure you want to logout?")) {
+      doLogout();
+    }
+  }
+
+  const editBtn = document.getElementById("editProfileBtn");
+  const editName = document.getElementById("editName");
+  const editMobile = document.getElementById("editMobile");
+  const profileNameEl = document.getElementById("profileName");
+  const profileMobileEl = document.getElementById("profileMobile");
+  const emptyValue = "--";
+
+  if (editBtn) {
+    editBtn.addEventListener("click", async () => {
+      const inEdit = editBtn.dataset.edit === "1";
+
+      if (!inEdit) {
+        editName.value = profileNameEl.innerText === emptyValue ? "" : profileNameEl.innerText;
+        editMobile.value = profileMobileEl.innerText === emptyValue ? "" : profileMobileEl.innerText;
+        editName.style.display = "block";
+        editMobile.style.display = "block";
+        editBtn.textContent = "Save";
+        editBtn.dataset.edit = "1";
+        return;
+      }
+
+      const name = editName.value.trim();
+      const mobile = editMobile.value.trim();
+
+      if (!name) {
+        if (typeof localShow === "function") localShow("Name cannot be empty", "error");
+        else if (window.showToast) window.showToast("Name cannot be empty", "error");
+        else alert("Name cannot be empty");
+        return;
+      }
+
+      if (mobile && !/^[0-9]{10}$/.test(mobile)) {
+        if (typeof localShow === "function") localShow("Mobile must be exactly 10 digits", "error");
+        else if (window.showToast) window.showToast("Mobile must be exactly 10 digits", "error");
+        else alert("Mobile must be exactly 10 digits");
+        return;
+      }
+
+      editBtn.disabled = true;
+      editBtn.textContent = "Saving...";
+
+      try {
+        const res = await fetch("/api/user/update-profile", {
+          method: "POST",
+          credentials: "include",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({ name, mobile })
+        });
+        const data = await res.json();
+
+        if (data.success) {
+          if (typeof localShow === "function") localShow("Profile updated", "success");
+          else if (window.showToast) window.showToast("Profile updated", "success");
+          else alert("Profile updated");
+          editName.style.display = "none";
+          editMobile.style.display = "none";
+          editBtn.textContent = "Edit Profile";
+          editBtn.dataset.edit = "0";
+          loadUserProfile();
+        } else {
+          if (typeof localShow === "function") localShow(data.message || "Unable to update", "error");
+          else if (window.showToast) window.showToast(data.message || "Unable to update", "error");
+          else alert(data.message || "Unable to update");
+        }
+      } catch (err) {
+        if (typeof localShow === "function") localShow("Server error", "error");
+        else if (window.showToast) window.showToast("Server error", "error");
+        else alert("Server error");
+      } finally {
+        editBtn.disabled = false;
+        editBtn.textContent = editBtn.dataset.edit === "1" ? "Save" : "Edit Profile";
+      }
+    });
+  }
+</script>
+
+<script th:src="@{/js/toast.js}"></script>
+<script th:src="@{/js/chatbot-widget.js}"></script>
+</body>
+</html>

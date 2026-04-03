@@ -1,0 +1,438 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Donation History | BloodCare</title>
+    <link rel="stylesheet" th:href="@{/css/common.css}">
+    <style>
+        * {
+            box-sizing: border-box;
+        }
+
+        body {
+            background:
+                radial-gradient(circle at top left, rgba(255, 255, 255, 0.03), transparent 55%),
+                linear-gradient(135deg, rgba(120,16,48,0.92), rgba(8,15,35,0.94));
+            color: #fff;
+            font-family: 'Poppins', sans-serif;
+            margin: 0;
+            padding: 0;
+        }
+
+        .navbar {
+            background: rgba(8, 15, 35, 0.9);
+            padding: 15px 30px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            border-bottom: 2px solid #dc2626;
+            backdrop-filter: blur(10px);
+        }
+
+        .logo {
+            font-size: 24px;
+            font-weight: 800;
+            color: #dc2626;
+        }
+
+        .navbar a, .navbar button {
+            color: #fff;
+            text-decoration: none;
+            background: none;
+            border: none;
+            cursor: pointer;
+            font-weight: 600;
+            padding: 8px 16px;
+            border-radius: 6px;
+            transition: all 0.3s;
+        }
+
+        .navbar a:hover, .navbar button:hover {
+            background: #dc2626;
+        }
+
+        .container {
+            max-width: 1200px;
+            margin: 40px auto;
+            padding: 0 20px;
+        }
+
+        .header {
+            text-align: center;
+            margin-bottom: 40px;
+        }
+
+        .header h1 {
+            font-size: 36px;
+            margin: 0;
+            background: linear-gradient(135deg, #dc2626 0%, #ef4444 100%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+        }
+
+        .header p {
+            color: #94a3b8;
+            margin: 10px 0 0 0;
+        }
+
+        .stats {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 20px;
+            margin-bottom: 40px;
+        }
+
+        .stat-card {
+            background: linear-gradient(135deg, #1e293b 0%, #0f172a 100%);
+            border: 1px solid #dc2626;
+            border-radius: 12px;
+            padding: 25px;
+            text-align: center;
+        }
+
+        .stat-card h3 {
+            color: #94a3b8;
+            font-size: 14px;
+            text-transform: uppercase;
+            margin: 0 0 10px 0;
+            letter-spacing: 1px;
+        }
+
+        .stat-card .value {
+            font-size: 32px;
+            font-weight: 800;
+            color: #dc2626;
+        }
+
+        .table-section {
+            background: linear-gradient(135deg, rgba(17,24,39,.93) 0%, rgba(30,41,59,.9) 100%);
+            border-radius: 12px;
+            border: 1px solid #334155;
+            overflow: hidden;
+            box-shadow: 0 10px 40px rgba(0, 0, 0, 0.3);
+        }
+
+        .table-header {
+            background: linear-gradient(135deg, #ef4444 0%, #991b1b 100%);
+            padding: 20px 30px;
+            border-bottom: 2px solid #991b1b;
+        }
+
+        .table-header h2 {
+            margin: 0;
+            font-size: 22px;
+        }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+        }
+
+        thead {
+            background: rgba(220, 38, 38, 0.1);
+        }
+
+        th {
+            padding: 15px 20px;
+            text-align: left;
+            font-weight: 700;
+            color: #dc2626;
+            border-bottom: 2px solid #334155;
+            text-transform: uppercase;
+            font-size: 12px;
+            letter-spacing: 1px;
+        }
+
+        td {
+            padding: 15px 20px;
+            border-bottom: 1px solid #334155;
+            color: #f8fafc;
+        }
+
+        tbody tr {
+            transition: all 0.3s;
+        }
+
+        tbody tr:hover {
+            background: rgba(239, 68, 68, 0.14);
+        }
+
+        .status {
+            display: inline-block;
+            padding: 6px 12px;
+            border-radius: 20px;
+            font-size: 12px;
+            font-weight: 600;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+
+        .status.pending {
+            background: #fef3c7;
+            color: #92400e;
+        }
+
+        .status.approved {
+            background: #dcfce7;
+            color: #166534;
+        }
+
+        .status.rejected {
+            background: #fee2e2;
+            color: #991b1b;
+        }
+
+        .empty-state {
+            text-align: center;
+            padding: 60px 30px;
+            color: #94a3b8;
+        }
+
+        .empty-state-icon {
+            font-size: 60px;
+            margin-bottom: 20px;
+        }
+
+        .empty-state h3 {
+            font-size: 24px;
+            margin: 0 0 10px 0;
+            color: #cbd5e1;
+        }
+
+        .empty-state p {
+            margin: 0;
+            font-size: 14px;
+        }
+
+        .action-btn {
+            background: linear-gradient(135deg, #dc2626 0%, #991b1b 100%);
+            color: white;
+            border: none;
+            padding: 10px 20px;
+            border-radius: 6px;
+            cursor: pointer;
+            font-weight: 600;
+            margin-top: 20px;
+            transition: all 0.3s;
+        }
+
+        .action-btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(220, 38, 38, 0.4);
+        }
+
+        .back-btn {
+            display: inline-block;
+            margin-bottom: 30px;
+            color: #dc2626;
+            text-decoration: none;
+            font-weight: 600;
+            padding: 10px 20px;
+            border: 2px solid #dc2626;
+            border-radius: 6px;
+            transition: all 0.3s;
+        }
+
+        .back-btn:hover {
+            background: #dc2626;
+            color: white;
+        }
+
+        .loading {
+            text-align: center;
+            padding: 40px;
+            color: #94a3b8;
+        }
+
+        @media (max-width: 768px) {
+            .header h1 {
+                font-size: 24px;
+            }
+
+            .stats {
+                grid-template-columns: 1fr;
+            }
+
+            th, td {
+                padding: 10px 12px;
+                font-size: 12px;
+            }
+
+            table {
+                display: block;
+                overflow-x: auto;
+            }
+        }
+    </style>
+</head>
+<body>
+
+<header class="navbar">
+    <div class="logo">🩸 BloodCare</div>
+    <nav>
+        <a th:href="@{/donor-dashboard}" class="btn">Dashboard</a>
+        <a th:href="@{/}">Home</a>
+        <a th:href="@{/about}">About</a>
+        <button class="btn logout-btn" onclick="logout()">Logout</button>
+    </nav>
+</header>
+
+<div class="container">
+    <a href="javascript:history.back()" class="back-btn">← Back</a>
+
+    <div class="header">
+        <h1>🏥 Your Donation History</h1>
+        <p>View all your blood donation visits and requests</p>
+    </div>
+
+    <!-- STATISTICS -->
+    <div class="stats" id="statsContainer">
+        <div class="stat-card">
+            <h3>Total Requests</h3>
+            <div class="value" id="totalRequests">0</div>
+        </div>
+        <div class="stat-card">
+            <h3>Approved Visits</h3>
+            <div class="value" id="approvedVisits">0</div>
+        </div>
+        <div class="stat-card">
+            <h3>Pending Requests</h3>
+            <div class="value" id="pendingRequests">0</div>
+        </div>
+        <div class="stat-card">
+            <h3>Rejected</h3>
+            <div class="value" id="rejectedRequests">0</div>
+        </div>
+    </div>
+
+    <!-- DONATION HISTORY TABLE -->
+    <div class="table-section">
+        <div class="table-header">
+            <h2>📋 All Donation Visits</h2>
+        </div>
+        
+        <div id="loadingState" class="loading">
+            Loading your donation history...
+        </div>
+
+        <table id="historyTable" style="display: none;">
+            <thead>
+                <tr>
+                    <th>Request ID</th>
+                    <th>Hospital</th>
+                    <th>Units</th>
+                    <th>Request Date</th>
+                    <th>Status</th>
+                </tr>
+            </thead>
+            <tbody id="historyBody">
+            </tbody>
+        </table>
+
+        <div id="emptyState" style="display: none;">
+            <div class="empty-state">
+                <div class="empty-state-icon">📭</div>
+                <h3>No Donation History Yet</h3>
+                <p>You haven't made any donation requests yet. Start donating and save lives!</p>
+                <a th:href="@{/visit}" class="action-btn">Start Donating Now</a>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+    const BASE_URL = "/api";
+
+    document.addEventListener('DOMContentLoaded', () => {
+        loadDonationHistory();
+    });
+
+    async function loadDonationHistory() {
+        try {
+            const response = await fetch(`${BASE_URL}/visit-request/my`, {
+                credentials: 'include'
+            });
+
+            if (response.status === 401) {
+                window.location.href = '/login';
+                return;
+            }
+
+            if (!response.ok) {
+                throw new Error('Failed to load history');
+            }
+
+            const visits = await response.json();
+
+            // Update statistics
+            const totalCount = visits.length;
+            const approvedCount = visits.filter(v => v.status === 'APPROVED').length;
+            const pendingCount = visits.filter(v => v.status === 'PENDING').length;
+            const rejectedCount = visits.filter(v => v.status === 'REJECTED').length;
+
+            document.getElementById('totalRequests').textContent = totalCount;
+            document.getElementById('approvedVisits').textContent = approvedCount;
+            document.getElementById('pendingRequests').textContent = pendingCount;
+            document.getElementById('rejectedRequests').textContent = rejectedCount;
+
+            // Hide loading, show table or empty state
+            document.getElementById('loadingState').style.display = 'none';
+
+            if (totalCount === 0) {
+                document.getElementById('emptyState').style.display = 'block';
+                return;
+            }
+
+            // Populate table
+            const tbody = document.getElementById('historyBody');
+            tbody.innerHTML = visits.map(visit => `
+                <tr>
+                    <td>#${visit.id}</td>
+                    <td>${visit.hospitalName || '—'}</td>
+                    <td>${visit.units || '—'} units</td>
+                    <td>${new Date(visit.requestDate).toLocaleDateString('en-IN')}</td>
+                    <td>
+                        <span class="status ${visit.status.toLowerCase()}">
+                            ${visit.status}
+                        </span>
+                    </td>
+                </tr>
+            `).join('');
+
+            document.getElementById('historyTable').style.display = 'table';
+
+        } catch (error) {
+            console.error('Error loading history:', error);
+            document.getElementById('loadingState').innerHTML = `
+                <div class="empty-state">
+                    <div class="empty-state-icon">❌</div>
+                    <h3>Error Loading History</h3>
+                    <p>${error.message}</p>
+                </div>
+            `;
+        }
+    }
+
+    function logout() {
+        const doLogout = () => {
+            fetch(`${BASE_URL}/auth/logout`, {
+                method: 'POST',
+                credentials: 'include'
+            }).then(() => {
+                window.location.href = '/login';
+            });
+        };
+
+        if (typeof showConfirm === 'function') {
+            showConfirm('Are you sure you want to logout?', doLogout);
+        } else {
+            if (confirm('Are you sure you want to logout?')) doLogout();
+        }
+    }
+</script>
+<script th:src="@{/js/toast.js}"></script>
+
+</body>
+</html>

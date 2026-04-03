@@ -1,0 +1,29 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <title>Logging in...</title>
+</head>
+<body>
+
+<script>
+  const params = new URLSearchParams(window.location.search);
+
+  const user = {
+    name: params.get("name"),
+    email: params.get("email")
+  };
+
+  fetch("/api/auth/google-login", {
+    method: "POST",
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify(user)
+  })
+  .then(res => res.json())
+  .then(data => {
+    localStorage.setItem("bloodcareUser", JSON.stringify(data));
+    window.location.href = "index.html";
+  });
+</script>
+
+</body>
+</html>

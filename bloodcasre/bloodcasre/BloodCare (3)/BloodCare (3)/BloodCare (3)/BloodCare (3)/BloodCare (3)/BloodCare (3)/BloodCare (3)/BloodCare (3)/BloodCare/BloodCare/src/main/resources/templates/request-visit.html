@@ -1,0 +1,199 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+  <meta charset="UTF-8">
+  <title>Request Donation Visit | BloodCare</title>
+  <link rel="stylesheet" th:href="@{/css/common.css}">
+  <link rel="stylesheet" th:href="@{/css/auth.css}">
+  <style>
+    .request-visit-shell {
+      width: min(1120px, calc(100% - 1rem));
+      margin: 0 auto;
+      padding: 1rem 0 2.5rem;
+    }
+
+    .request-visit-form {
+      gap: 1.25rem;
+    }
+
+    .donor-summary {
+      display: grid;
+      gap: 0.9rem;
+      padding: 1.2rem 1.25rem;
+      border-radius: 1.15rem;
+      background: linear-gradient(135deg, #8a2431 0%, #5d1821 100%);
+      color: #fff;
+      box-shadow: 0 20px 45px rgba(93, 24, 33, 0.24);
+    }
+
+    .donor-summary-title {
+      margin: 0;
+      font-size: 0.98rem;
+      font-weight: 800;
+      letter-spacing: 0.01em;
+      color: rgba(255, 255, 255, 0.95);
+    }
+
+    .donor-summary-grid {
+      display: grid;
+      grid-template-columns: repeat(3, minmax(0, 1fr));
+      gap: 0.9rem;
+    }
+
+    .donor-summary-item {
+      padding: 0.85rem 0.95rem;
+      border-radius: 0.95rem;
+      background: rgba(255, 255, 255, 0.12);
+      border: 1px solid rgba(255, 255, 255, 0.12);
+    }
+
+    .donor-summary-label {
+      margin: 0 0 0.35rem;
+      font-size: 0.78rem;
+      color: rgba(255, 255, 255, 0.76);
+    }
+
+    .donor-summary-value {
+      margin: 0;
+      font-size: 1.35rem;
+      font-weight: 800;
+      color: #fff;
+    }
+
+    .request-visit-form .input-group input,
+    .request-visit-form .input-group select {
+      padding-top: 1.45rem;
+      padding-bottom: 0.6rem;
+    }
+
+    .request-visit-form .input-group.has-value label,
+    .request-visit-form .input-group input[type="date"] + label {
+      top: 0;
+      transform: translateY(-50%);
+      font-size: 0.72rem;
+      font-weight: 800;
+      color: var(--brand);
+      background: rgba(255, 255, 255, 0.96);
+    }
+
+    .request-visit-form .input-group input[readonly] {
+      background: rgba(248, 239, 231, 0.9);
+      color: var(--brand-deep);
+      font-weight: 700;
+    }
+
+    @media (max-width: 720px) {
+      .donor-summary-grid {
+        grid-template-columns: 1fr;
+      }
+    }
+  </style>
+</head>
+
+<body class="page-bg">
+
+<header class="navbar">
+  <div class="logo">BloodCare</div>
+  <nav>
+    <a th:href="@{/donor-dashboard}" class="btn">Dashboard</a>
+    <a th:href="@{/}">Home</a>
+    <a th:href="@{/about}">About</a>
+  </nav>
+</header>
+
+<section class="request-visit-shell">
+  <form class="auth-box auth-neo request-visit-form" id="visitForm">
+
+    <div class="card-head">
+      <h2>Request Donation Visit</h2>
+      <p>Complete your donation journey</p>
+    </div>
+
+    <div class="donor-summary">
+      <p class="donor-summary-title">Your Donor Information</p>
+      <div class="donor-summary-grid">
+        <div class="donor-summary-item">
+          <p class="donor-summary-label">Donor ID</p>
+          <p class="donor-summary-value" id="donorId">-</p>
+        </div>
+        <div class="donor-summary-item">
+          <p class="donor-summary-label">Blood Group</p>
+          <p class="donor-summary-value" id="donorBlood">-</p>
+        </div>
+        <div class="donor-summary-item">
+          <p class="donor-summary-label">Units Willing</p>
+          <p class="donor-summary-value" id="donorUnits">-</p>
+        </div>
+      </div>
+    </div>
+
+    <div class="input-group">
+      <input type="text" id="hospitalName" readonly required>
+      <label>Hospital Name</label>
+    </div>
+
+    <div class="input-group">
+      <select id="location" required>
+        <option value=""></option>
+        <option value="MAIN_BRANCH">Main Branch</option>
+        <option value="EAST_WING">East Wing</option>
+        <option value="WEST_WING">West Wing</option>
+        <option value="NORTH_BRANCH">North Branch</option>
+        <option value="SOUTH_BRANCH">South Branch</option>
+      </select>
+      <label>Hospital Location / Wing</label>
+    </div>
+
+    <div class="input-group">
+      <input type="date" id="visitDate" required>
+      <label>Visit Date</label>
+    </div>
+
+    <div class="input-group">
+      <select id="timeSlot" required>
+        <option value=""></option>
+        <option value="9 AM - 11 AM">9 AM - 11 AM</option>
+        <option value="11 AM - 1 PM">11 AM - 1 PM</option>
+        <option value="2 PM - 4 PM">2 PM - 4 PM</option>
+        <option value="4 PM - 6 PM">4 PM - 6 PM</option>
+      </select>
+      <label>Time Slot</label>
+    </div>
+
+    <div class="input-group">
+      <select id="donationType" required>
+        <option value=""></option>
+        <option value="WHOLE">Whole Blood</option>
+        <option value="PLATELETS">Platelets</option>
+        <option value="RBC">Red Blood Cells</option>
+        <option value="PLASMA">Plasma</option>
+      </select>
+      <label>Donation Type</label>
+    </div>
+
+    <div class="input-group">
+      <select id="units" required>
+        <option value=""></option>
+        <option value="1">1 Unit</option>
+        <option value="2">2 Units</option>
+      </select>
+      <label>Units to Donate</label>
+    </div>
+
+    <div class="input-group">
+      <input type="text" id="remark" placeholder="e.g., Medical check-up after donation">
+      <label>Remarks (Optional)</label>
+    </div>
+
+    <button type="submit" class="btn btn-main">
+      Submit Request
+    </button>
+
+  </form>
+</section>
+
+<script th:src="@{/js/request_visit.js}"></script>
+<script th:src="@{/js/toast.js}"></script>
+<script th:src="@{/js/chatbot-widget.js}"></script>
+</body>
+</html>

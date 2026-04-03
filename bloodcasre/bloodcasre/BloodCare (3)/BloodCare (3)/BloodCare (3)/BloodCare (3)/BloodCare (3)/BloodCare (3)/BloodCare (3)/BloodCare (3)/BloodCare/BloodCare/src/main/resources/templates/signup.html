@@ -1,0 +1,105 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Sign Up | BloodCare</title>
+  <link rel="stylesheet" th:href="@{/css/common.css}">
+  <link rel="stylesheet" th:href="@{/css/auth.css}">
+</head>
+<body class="auth-page">
+<div class="page-bg">
+  <header class="navbar">
+    <div class="logo">BloodCare</div>
+    <nav>
+      <a th:href="@{/}">Home</a>
+      <a th:href="@{/about}">About</a>
+    </nav>
+  </header>
+
+  <section class="auth-stage">
+    <div class="auth-side">
+      <span class="eyebrow">Donor and receiver onboarding</span>
+      <h1>Create one account and keep your emergency workflow ready.</h1>
+      <p>
+        Sign up to manage donor details, visit requests, certificates, and blood
+        request updates through the same frontend flow.
+      </p>
+
+      <div class="auth-highlights">
+        <article class="auth-note">
+          <strong>Faster follow-through</strong>
+          <span>Save your details once and return to the same structured dashboard.</span>
+        </article>
+        <article class="auth-note">
+          <strong>Cleaner coordination</strong>
+          <span>Handle visit scheduling, donation history, and request tracking together.</span>
+        </article>
+        <article class="auth-note">
+          <strong>Built for momentum</strong>
+          <span>Rewards, badges, and certificates make continued donation easier to follow.</span>
+        </article>
+      </div>
+    </div>
+
+    <form class="auth-box auth-neo" id="signupForm" novalidate>
+      <div class="card-head">
+        <span class="badge">Create Account</span>
+        <h2>Join BloodCare</h2>
+        <p>Set up your account and start helping faster.</p>
+      </div>
+
+      <div class="input-group">
+        <input type="text" id="name" required autocomplete="name">
+        <label>Full Name</label>
+      </div>
+
+      <div class="input-group">
+        <input type="email" id="email" required autocomplete="email">
+        <label>Email Address</label>
+      </div>
+
+      <div class="input-group">
+        <input type="text" id="mobile" maxlength="10" required pattern="[0-9]{10}" oninput="this.value=this.value.replace(/[^0-9]/g,'')" autocomplete="tel">
+        <label>Mobile Number</label>
+      </div>
+
+      <div class="input-group password-group">
+        <input type="password" id="password" required autocomplete="new-password">
+        <label>Password</label>
+        <button type="button" class="show-hide" onclick="togglePassword('password')">Show</button>
+        <div id="passwordStrength" class="strength" style="display:none;"></div>
+      </div>
+
+      <div class="input-group password-group">
+        <input type="password" id="confirmPassword" required autocomplete="new-password">
+        <label>Confirm Password</label>
+        <button type="button" class="show-hide" onclick="togglePassword('confirmPassword')">Show</button>
+      </div>
+
+      <div class="btn-group">
+        <button type="submit" class="btn btn-main">Create Account</button>
+      </div>
+
+      <div class="divider">
+        <span>Or continue with</span>
+      </div>
+
+      <a href="/oauth2/authorization/google" class="btn btn-google">Continue with Google</a>
+
+      <p class="switch">
+        Already have an account?
+        <a th:href="@{/login}">Login</a>
+      </p>
+
+      <div class="auth-foot">
+        <a th:href="@{/}" class="back-link">Back to home</a>
+      </div>
+    </form>
+  </section>
+</div>
+
+<script th:src="@{/js/signup.js}"></script>
+<script th:src="@{/js/toast.js}"></script>
+</body>
+</html>

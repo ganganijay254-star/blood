@@ -1,0 +1,174 @@
+/* ABOUT HERO */
+.about-hero {
+  text-align: center;
+  padding: 90px 20px 50px;
+  animation: fadeDown 0.8s ease;
+}
+
+.about-hero h1 {
+  font-size: 42px;
+  margin-bottom: 12px;
+  color: var(--brand-deep);
+}
+
+.about-hero p {
+  font-size: 16px;
+  color: var(--ink-soft);
+}
+
+/* ABOUT CONTENT GRID */
+.about-content {
+  max-width: 1100px;
+  margin: auto;
+  padding: 40px 20px 80px;
+
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
+  gap: 30px;
+}
+
+/* ABOUT CARD */
+.about-card {
+  background: linear-gradient(180deg, rgba(255, 255, 255, 0.96), rgba(255, 248, 243, 0.92));
+  padding: 32px 26px;
+  border-radius: 18px;
+  border: 1px solid rgba(93, 24, 33, 0.12);
+  backdrop-filter: blur(10px);
+  box-shadow: 0 18px 45px rgba(93, 24, 33, 0.1);
+
+  transform: translateY(20px);
+  opacity: 0;
+  animation: fadeUp 0.8s ease forwards;
+}
+
+.about-card:nth-child(1) { animation-delay: 0.1s; }
+.about-card:nth-child(2) { animation-delay: 0.2s; }
+.about-card:nth-child(3) { animation-delay: 0.3s; }
+.about-card:nth-child(4) { animation-delay: 0.4s; }
+.about-card:nth-child(5) { animation-delay: 0.5s; }
+
+.about-card:hover {
+  transform: translateY(-8px) scale(1.02);
+  box-shadow: 0 24px 52px rgba(93, 24, 33, 0.18);
+}
+
+/* ICON */
+.about-card .icon {
+  font-size: 36px;
+  margin-bottom: 14px;
+  animation: pulse 2.5s ease-in-out infinite;
+  color: var(--brand);
+}
+
+/* TEXT */
+.about-card h3 {
+  font-size: 20px;
+  margin-bottom: 10px;
+  color: var(--brand-deep);
+}
+
+.about-card p {
+  font-size: 15px;
+  line-height: 1.6;
+  color: var(--ink-soft);
+}
+
+.about-experience {
+  padding: 48px 20px 80px;
+}
+
+.about-experience-wrap {
+  max-width: 1100px;
+  margin: 0 auto;
+}
+
+.about-experience h2 {
+  text-align: center;
+  margin: 0 0 28px 0;
+  font-size: 34px;
+  color: var(--brand-deep);
+}
+
+.experience-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
+  gap: 24px;
+}
+
+.experience-card {
+  background: rgba(255, 255, 255, 0.88);
+  border-radius: 18px;
+  padding: 26px 22px;
+  text-align: center;
+  border: 1px solid rgba(93, 24, 33, 0.12);
+  backdrop-filter: blur(10px);
+  transition: transform .25s ease, box-shadow .25s ease;
+  box-shadow: 0 18px 40px rgba(93, 24, 33, 0.08);
+}
+
+.experience-card:hover {
+  transform: translateY(-6px);
+  box-shadow: 0 22px 46px rgba(93, 24, 33, 0.16);
+}
+
+.experience-card .step {
+  width: 50px;
+  height: 50px;
+  border-radius: 50%;
+  margin: 0 auto 12px;
+  background: linear-gradient(135deg, #ef4444, #991b1b);
+  color: #fff;
+  font-size: 22px;
+  font-weight: 800;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.experience-card h4 {
+  color: var(--brand-deep);
+  margin: 0 0 8px 0;
+  font-size: 18px;
+}
+
+.experience-card p {
+  color: var(--ink-soft);
+  margin: 0;
+  font-size: 14px;
+  line-height: 1.55;
+}
+
+/* ANIMATIONS */
+@keyframes fadeUp {
+  to {
+    transform: translateY(0);
+    opacity: 1;
+  }
+}
+
+@keyframes fadeDown {
+  from {
+    opacity: 0;
+    transform: translateY(-20px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+@keyframes pulse {
+  0%, 100% { transform: scale(1); }
+  50% { transform: scale(1.08); }
+}
+
+/* RESPONSIVE */
+@media (max-width: 768px) {
+  .about-hero h1 {
+    font-size: 32px;
+  }
+
+  .about-card .icon {
+    font-size: 32px;
+  }
+}

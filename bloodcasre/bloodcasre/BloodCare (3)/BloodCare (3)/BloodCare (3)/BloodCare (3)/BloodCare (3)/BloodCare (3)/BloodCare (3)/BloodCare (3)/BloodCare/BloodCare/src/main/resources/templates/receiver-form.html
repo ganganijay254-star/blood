@@ -1,0 +1,271 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Blood Request | BloodCare</title>
+  <link rel="stylesheet" th:href="@{/css/common.css}">
+  <link rel="stylesheet" th:href="@{/css/dashboard.css}">
+  <link rel="stylesheet" th:href="@{/css/receiver.css}">
+  <style>
+    .compat-card {
+      margin: 0.2rem 0;
+      padding: 1rem;
+      border-radius: 1rem;
+      border: 1px solid #fecaca;
+      background: linear-gradient(135deg, #fff7f7, #fff1f2);
+    }
+
+    .compat-pills {
+      display: flex;
+      gap: 0.5rem;
+      flex-wrap: wrap;
+      margin-top: 0.75rem;
+    }
+
+    .compat-pill {
+      padding: 0.45rem 0.8rem;
+      border-radius: 999px;
+      background: #fee2e2;
+      color: #991b1b;
+      font-weight: 700;
+      font-size: 0.82rem;
+    }
+
+    .emergency-banner {
+      margin: 0.2rem 0 0.5rem;
+      padding: 0.95rem 1rem;
+      border-radius: 1rem;
+      background: linear-gradient(135deg, #7f1d1d, #dc2626);
+      color: #fff;
+      box-shadow: 0 18px 40px rgba(127, 29, 29, 0.18);
+    }
+
+    .emergency-banner.hidden {
+      display: none;
+    }
+
+    .emergency-trigger.active {
+      outline: 3px solid rgba(220, 38, 38, 0.16);
+      transform: translateY(-1px);
+    }
+  </style>
+</head>
+<body>
+<div class="page-bg">
+  <div class="blood-overlay"></div>
+
+  <header class="navbar">
+    <div class="logo">BloodCare</div>
+    <nav class="dashboard-nav">
+      <a th:href="@{/}">Home</a>
+      <a th:href="@{/medicine}">Medicines</a>
+      <a th:href="@{/leaderboard}">Leaderboard</a>
+      <a th:href="@{/about}">About</a>
+      <a th:href="@{/donor-dashboard}">Dashboard</a>
+      <a th:href="@{/donor-profile}">My Profile</a>
+    </nav>
+  </header>
+
+  <div id="locationStep" class="center-screen hidden">
+    <div class="location-screen">
+      <h1>Blood Request Service</h1>
+      <p>We need your location to find nearby hospitals and blood support options.</p>
+      <div class="spinner"></div>
+      <p id="locationStatus">Detecting your location...</p>
+      <div class="location-display" id="locationDisplay"></div>
+      <button class="btn btn-main" id="retryBtn" onclick="getLocation()">Try Again</button>
+    </div>
+  </div>
+
+  <div id="formStep" class="receiver-shell">
+    <main class="dashboard-main">
+      <section class="dashboard-hero surface-card">
+        <div class="dashboard-hero__copy">
+          <span class="eyebrow">Receiver Support Desk</span>
+          <h1>Request blood with nearby hospital support</h1>
+          <p>
+            Choose a hospital, add patient details, and let the platform coordinate
+            compatible donor matching and stock availability in one flow.
+          </p>
+        </div>
+
+        <div class="dashboard-hero__actions">
+          <a th:href="@{/donor-profile}" class="btn btn-outline">My Profile</a>
+          <a th:href="@{/donor-dashboard}" class="btn btn-ghost">Dashboard</a>
+        </div>
+      </section>
+
+      <section class="info-section">
+        <div class="section-head">
+          <span class="section-kicker">Status</span>
+          <h2>Request readiness</h2>
+        </div>
+        <div id="eligibilityMsg" class="eligibility">Eligibility will be verified by the system.</div>
+      </section>
+
+      <div class="dashboard-split receiver-layout">
+        <section class="info-section hospital-panel">
+          <div class="section-head">
+            <span class="section-kicker">Hospitals</span>
+            <h2>Nearby hospitals</h2>
+          </div>
+          <p class="section-copy">
+            The nearest hospital options will appear here after location detection.
+            The first available option is selected automatically for convenience.
+          </p>
+          <div id="hospitalList"></div>
+        </section>
+
+        <section class="info-section receiver-form-panel">
+          <div class="section-head">
+            <span class="section-kicker">Patient Details</span>
+            <h2>Complete the request</h2>
+          </div>
+
+          <form id="visitForm">
+            <div id="requestFormSection" class="hidden receiver-form-stack">
+              <button type="button" id="urgentNeededBtn" class="btn btn-main emergency-trigger">Urgent Needed</button>
+
+              <div id="emergencyBanner" class="emergency-banner hidden">
+                <strong>Emergency mode active</strong>
+                <p>Your request will be highlighted first and sent for immediate hospital approval.</p>
+              </div>
+
+              <div class="input-group">
+                <input type="text" id="selectedHospitalName" readonly required>
+                <label>Selected Hospital</label>
+              </div>
+
+              <div class="input-group">
+                <input type="number" id="requestUnits" min="1" max="10" required>
+                <label>Required Units</label>
+              </div>
+
+              <div class="input-group">
+                <input type="text" id="patientName" required>
+                <label>Patient Name</label>
+              </div>
+
+              <div class="input-group">
+                <select id="bloodGroup" required>
+                  <option value=""></option>
+                  <option value="A+">A+</option>
+                  <option value="A-">A-</option>
+                  <option value="B+">B+</option>
+                  <option value="B-">B-</option>
+                  <option value="AB+">AB+</option>
+                  <option value="AB-">AB-</option>
+                  <option value="O+">O+</option>
+                  <option value="O-">O-</option>
+                </select>
+                <label>Blood Group</label>
+              </div>
+
+              <div class="compat-card">
+                <strong>Compatible blood groups</strong>
+                <p id="compatibilityText">Select blood group to see what can be used for this receiver.</p>
+                <div id="compatibilityPills" class="compat-pills"></div>
+              </div>
+
+              <div class="input-group">
+                <input type="text" id="city" required>
+                <label>City</label>
+              </div>
+
+              <div class="input-group">
+                <input type="date" id="requiredDate">
+                <label>Required Date</label>
+              </div>
+
+              <div class="input-group">
+                <select id="emergencyLevel" required>
+                  <option value="LOW">Normal</option>
+                  <option value="MEDIUM">Priority</option>
+                  <option value="HIGH">Urgent</option>
+                  <option value="CRITICAL">Critical</option>
+                </select>
+                <label>Emergency Level</label>
+              </div>
+
+              <div class="input-group">
+                <input type="text" id="contactNumber" required>
+                <label>Contact Number</label>
+              </div>
+
+              <div class="input-group">
+                <input type="file" id="medicalProof" accept="image/*,application/pdf">
+                <label>Medical Proof (Optional)</label>
+              </div>
+
+              <button type="submit" class="btn btn-main">Submit Request</button>
+            </div>
+          </form>
+        </section>
+      </div>
+
+      <div class="dashboard-split receiver-layout">
+        <section class="info-section info-section--feature">
+          <div class="section-head">
+            <span class="section-kicker">How It Works</span>
+            <h2>Matching happens in stages</h2>
+          </div>
+          <ul class="receiver-support-list">
+            <li>Nearby hospitals are identified from your current location.</li>
+            <li>Compatible donors are matched based on blood group and live response status.</li>
+            <li>If needed, hospital and blood bank stock is checked as a fallback.</li>
+          </ul>
+        </section>
+
+        <section class="info-section">
+          <div class="section-head">
+            <span class="section-kicker">Before You Submit</span>
+            <h2>Keep these details ready</h2>
+          </div>
+          <div class="detail-stack">
+            <div class="detail-card detail-card--neutral">
+              <p><strong>Patient identity</strong></p>
+              <p>Use the correct patient name and phone number for fast coordination.</p>
+            </div>
+            <div class="detail-card detail-card--warning">
+              <p><strong>Medical proof</strong></p>
+              <p>Upload an image or PDF if you want hospitals to verify the request faster.</p>
+            </div>
+            <div class="detail-card detail-card--success">
+              <p><strong>Critical requests</strong></p>
+              <p>Use emergency mode only when immediate prioritization is truly needed.</p>
+            </div>
+          </div>
+        </section>
+      </div>
+    </main>
+  </div>
+
+  <div id="visitStep" class="receiver-shell hidden">
+    <main class="dashboard-main">
+      <section class="dashboard-hero surface-card">
+        <div class="dashboard-hero__copy">
+          <span class="eyebrow">Request Submitted</span>
+          <h1>Blood request saved successfully</h1>
+          <p>Your request is now being processed. We will move you to live tracking shortly.</p>
+        </div>
+      </section>
+
+      <section class="info-section">
+        <div class="section-head">
+          <span class="section-kicker">Summary</span>
+          <h2>Request details</h2>
+        </div>
+        <div id="requestSummary" class="receiver-summary"></div>
+        <p class="section-copy">Redirecting to tracking in a few seconds...</p>
+      </section>
+    </main>
+  </div>
+</div>
+
+<div id="toast" class="toast"></div>
+
+<script th:src="@{/js/receiver.js}"></script>
+<script th:src="@{/js/chatbot-widget.js}"></script>
+</body>
+</html>

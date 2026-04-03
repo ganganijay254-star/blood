@@ -1,0 +1,473 @@
+<!DOCTYPE html>
+
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<head>
+
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Medicine Discounts | BloodCare</title>
+  <link rel="stylesheet" href="css/common.css">
+  <link rel="stylesheet" href="css/dashboard.css">
+  <style>
+    .medicine-container {
+      max-width: 1200px;
+      margin: auto;
+      padding: 30px 20px;
+    }
+
+    .medicine-header {
+      text-align: center;
+      margin-bottom: 40px;
+    }
+
+    .medicine-header h2 {
+      font-size: 32px;
+      margin-bottom: 10px;
+      color: #fff;
+    }
+
+    .medicine-header p {
+      font-size: 16px;
+      color: #cbd5e1;
+    }
+
+    .coupons-showcase {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(320px, 1fr));
+      gap: 24px;
+      margin-bottom: 40px;
+    }
+
+    .medicine-coupon {
+      background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+      color: white;
+      padding: 30px;
+      border-radius: 16px;
+      box-shadow: 0 12px 40px rgba(102, 126, 234, 0.2);
+      transition: transform 0.3s ease, box-shadow 0.3s ease;
+      position: relative;
+      overflow: hidden;
+    }
+
+    .medicine-coupon::before {
+      content: '';
+      position: absolute;
+      top: -50%;
+      right: -50%;
+      width: 200px;
+      height: 200px;
+      background: rgba(255, 255, 255, 0.1);
+      border-radius: 50%;
+    }
+
+    .medicine-coupon:hover {
+      transform: translateY(-8px);
+      box-shadow: 0 16px 50px rgba(102, 126, 234, 0.3);
+    }
+
+    .medicine-coupon-content {
+      position: relative;
+      z-index: 2;
+    }
+
+    .coupon-icon-big {
+      font-size: 48px;
+      margin-bottom: 12px;
+    }
+
+    .discount-badge {
+      background: rgba(255, 255, 255, 0.2);
+      padding: 12px 16px;
+      border-radius: 8px;
+      margin-bottom: 16px;
+      border-left: 4px solid #4ade80;
+    }
+
+    .discount-value {
+      font-size: 28px;
+      font-weight: 900;
+      color: #4ade80;
+      margin-bottom: 4px;
+    }
+
+    .discount-text {
+      font-size: 12px;
+      opacity: 0.9;
+    }
+
+    .medicine-coupon-code {
+      background: rgba(0, 0, 0, 0.2);
+      padding: 12px;
+      border-radius: 8px;
+      font-family: 'Courier New', monospace;
+      font-weight: 700;
+      text-align: center;
+      margin: 16px 0;
+      font-size: 14px;
+      letter-spacing: 1px;
+    }
+
+    .coupon-usage {
+      font-size: 12px;
+      opacity: 0.85;
+      line-height: 1.6;
+      margin-top: 12px;
+    }
+
+    .coupon-usage ul {
+      list-style: none;
+      padding: 0;
+      margin: 8px 0 0 0;
+    }
+
+    .coupon-usage li {
+      padding-left: 20px;
+      position: relative;
+      margin-bottom: 6px;
+    }
+
+    .coupon-usage li:before {
+      content: "✓";
+      position: absolute;
+      left: 0;
+      color: #4ade80;
+      font-weight: bold;
+    }
+
+    .coupon-status-badge {
+      display: inline-block;
+      padding: 4px 8px;
+      border-radius: 4px;
+      font-size: 11px;
+      font-weight: 600;
+      margin-top: 12px;
+    }
+
+    .coupon-status-badge.active {
+      background: #4ade80;
+      color: #000;
+    }
+
+    .coupon-status-badge.redeemed {
+      background: #64748b;
+      color: #fff;
+    }
+
+    .medicine-action-buttons {
+      display: flex;
+      gap: 8px;
+      margin-top: 16px;
+    }
+
+    .medicine-action-buttons button {
+      flex: 1;
+      padding: 8px 12px;
+      border: none;
+      border-radius: 6px;
+      font-size: 12px;
+      font-weight: 600;
+      cursor: pointer;
+      transition: background 0.2s;
+    }
+
+    .copy-medicine-btn {
+      background: rgba(255, 255, 255, 0.2);
+      color: white;
+    }
+
+    .copy-medicine-btn:hover {
+      background: rgba(255, 255, 255, 0.3);
+    }
+
+    .redeem-medicine-btn {
+      background: #fff;
+      color: #667eea;
+      font-weight: 700;
+    }
+
+    .redeem-medicine-btn:hover {
+      background: #f0f0f0;
+    }
+
+    .empty-state {
+      text-align: center;
+      padding: 60px 20px;
+      color: #cbd5e1;
+    }
+
+    .empty-state-icon {
+      font-size: 64px;
+      margin-bottom: 20px;
+    }
+
+    .empty-state h3 {
+      font-size: 20px;
+      margin-bottom: 10px;
+      color: #fff;
+    }
+
+    .empty-state p {
+      font-size: 14px;
+      margin-bottom: 20px;
+    }
+
+    .empty-state .btn {
+      margin-top: 20px;
+    }
+
+    .info-banner {
+      background: linear-gradient(135deg, rgba(74, 222, 128, 0.1) 0%, rgba(34, 197, 94, 0.1) 100%);
+      border: 1px solid rgba(74, 222, 128, 0.3);
+      padding: 20px;
+      border-radius: 12px;
+      margin-bottom: 30px;
+      color: #cbd5e1;
+    }
+
+    .info-banner h4 {
+      color: #4ade80;
+      margin-bottom: 10px;
+    }
+
+    .info-banner ul {
+      list-style: none;
+      padding: 0;
+    }
+
+    .info-banner li {
+      padding-left: 20px;
+      position: relative;
+      margin-bottom: 6px;
+      font-size: 13px;
+    }
+
+    .info-banner li:before {
+      content: "💊";
+      position: absolute;
+      left: 0;
+    }
+
+    @media (max-width: 600px) {
+      .coupons-showcase {
+        grid-template-columns: 1fr;
+      }
+
+      .medicine-header h2 {
+        font-size: 24px;
+      }
+    }
+  </style>
+</head>
+<body>
+
+<div class="page-bg">
+  <!-- NAVBAR -->
+<!-- NAVBAR -->
+<header class="navbar">
+  <div class="logo">🩸 BloodCare</div>
+  <nav style="display: flex; gap: 20px; align-items: center;">
+    <a th:href="@{/}" style="text-decoration: none; color: #374151; font-weight: 500;">Home</a>
+    <a th:href="@{/donor-dashboard}" style="text-decoration: none; color: #374151; font-weight: 500;">Dashboard</a>
+    <a th:href="@{/leaderboard}" style="text-decoration: none; color: #374151; font-weight: 500;">Leaderboard</a>
+    <a th:href="@{/donor-profile}" style="text-decoration: none; color: #374151; font-weight: 500;">👤 My Profile</a>
+    <button class="btn logout-btn" onclick="logout()">Logout</button>
+  </nav>
+</header>
+  <!-- MEDICINE SECTION -->
+  <section class="medicine-container">
+    <div class="medicine-header">
+      <h2>💊 Medical & Pharmacy Discounts</h2>
+      <p>Use your blood donation coupons to get exclusive discounts on medicines</p>
+    </div>
+
+    <!-- INFO BANNER -->
+    <div class="info-banner">
+      <h4>How to Use Your Medical Coupons:</h4>
+      <ul>
+        <li>Visit any registered pharmacy store</li>
+        <li>Show your coupon code during checkout</li>
+        <li>Get instant discount on your medicine purchase</li>
+        <li>Valid for all medicines & health products</li>
+        <li>Coupon can be redeemed once (single use)</li>
+      </ul>
+    </div>
+
+    <!-- COUPONS GRID -->
+    <div id="medicineContainer" style="display: none;">
+      <div class="coupons-showcase" id="medicineGrid"></div>
+    </div>
+
+    <!-- EMPTY STATE -->
+    <div class="empty-state" id="emptyMedicine" style="display: none;">
+      <div class="empty-state-icon">🩸</div>
+      <h3>No Medical Coupons Yet</h3>
+      <p>Donate blood to earn exclusive medical discounts</p>
+	<a th:href="@{/visit}" class="btn btn-main">Donate Blood Now</a>   
+	 </div>
+  </section>
+</div>
+
+<script>
+/* CHECK SERVER SESSION */
+fetch("/api/auth/check-session", {
+  credentials: "include"
+}).then(res => {
+  if (res.status !== 200) {
+    window.location.href = "/login";
+    return;
+  }
+  
+  // Load medicines once authenticated
+  displayMedicines();
+}).catch(() => {
+  window.location.href = "/login";
+});
+
+/* DISPLAY MEDICAL COUPONS */
+function displayMedicines() {
+  const container = document.getElementById("medicineContainer");
+  const grid = document.getElementById("medicineGrid");
+  const emptyState = document.getElementById("emptyMedicine");
+
+  // Fetch user's medicines/coupons from server
+  fetch("/api/rewards/my-rewards", {
+    credentials: "include"
+  })
+    .then(res => res.json())
+    .then(data => {
+      const active = data.active || [];
+      const redeemed = data.redeemed || [];
+      const allRewards = [...active, ...redeemed];
+
+      if (allRewards.length === 0) {
+        container.style.display = "none";
+        emptyState.style.display = "block";
+        return;
+      }
+
+      container.style.display = "block";
+      emptyState.style.display = "none";
+
+      grid.innerHTML = allRewards.map((reward, index) => {
+        const isRedeemed = reward.status === "REDEEMED";
+        const icon = reward.icon || "💊";
+        const date = new Date(reward.createdDate).toLocaleDateString();
+
+        return `
+          <div class="medicine-coupon" style="background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);">
+            <div class="medicine-coupon-content">
+              <div class="coupon-icon-big">${icon}</div>
+              
+              <div style="background: rgba(255, 255, 255, 0.15); padding: 8px; border-radius: 6px; margin-bottom: 12px; text-align: center; font-size: 12px; font-weight: 700;">
+                ${reward.title || 'Reward'}
+              </div>
+              
+              <div class="discount-badge">
+                <div class="discount-value">${reward.value || 0} pts</div>
+                <div class="discount-text">${reward.category || 'General'}</div>
+              </div>
+
+              <div style="font-size: 12px; color: rgba(255,255,255,0.8); margin-bottom: 8px;">
+                ${reward.description || ''}
+              </div>
+
+              <div class="medicine-coupon-code">${reward.rewardCode}</div>
+
+              <div class="coupon-usage">
+                <strong>Details:</strong>
+                <ul>
+                  <li>${reward.category || 'Category'}</li>
+                  <li>Created: ${date}</li>
+                </ul>
+              </div>
+
+              <span class="coupon-status-badge ${isRedeemed ? 'redeemed' : 'active'}">
+                ${isRedeemed ? '✅ REDEEMED' : '🔓 ACTIVE'}
+              </span>
+
+              <div class="medicine-action-buttons">
+                <button class="copy-medicine-btn" onclick="copyRewardCode('${reward.rewardCode}')">📋 Copy Code</button>
+                ${!isRedeemed ? '' : ''}
+              </div>
+            </div>
+          </div>
+        `;
+      }).join("");
+    })
+    .catch(err => {
+      console.error('Error loading medicines:', err);
+      emptyState.style.display = "block";
+      container.style.display = "none";
+    });
+}
+
+/* COPY REWARD CODE */
+function copyRewardCode(code) {
+  navigator.clipboard.writeText(code).then(() => {
+    showAlert("✅ Reward code copied!", "success");
+  }).catch(() => {
+    showAlert("Failed to copy code", "error");
+  });
+}
+
+/* CUSTOM ALERT POPUP */
+function showAlert(message, type = "success") {
+  const alert = document.createElement("div");
+  alert.style.cssText = `
+    position: fixed;
+    top: 20px;
+    right: 20px;
+    background: ${type === "success" ? "#10b981" : "#ef4444"};
+    color: white;
+    padding: 16px 24px;
+    border-radius: 8px;
+    box-shadow: 0 4px 12px rgba(0,0,0,0.2);
+    font-weight: 600;
+    z-index: 10000;
+    animation: slideIn 0.3s ease;
+  `;
+  alert.textContent = message;
+  document.body.appendChild(alert);
+  
+  setTimeout(() => {
+    alert.style.animation = "slideOut 0.3s ease";
+    setTimeout(() => alert.remove(), 300);
+  }, 3000);
+}
+
+/* LOGOUT FUNCTION */
+function logout() {
+  const doLogout = () => {
+    fetch("/api/auth/logout", {
+      method: "POST",
+      credentials: "include"
+    }).then(() => {
+      window.location.href = "/login";
+    });
+  };
+
+  if (typeof showConfirm === 'function') {
+    showConfirm('Are you sure you want to logout?', doLogout);
+  } else if (confirm("Are you sure you want to logout?")) {
+    doLogout();
+  }
+}
+
+/* ADD CSS ANIMATION */
+const style = document.createElement("style");
+style.textContent = `
+  @keyframes slideIn {
+    from { transform: translateX(400px); opacity: 0; }
+    to { transform: translateX(0); opacity: 1; }
+  }
+  @keyframes slideOut {
+    from { transform: translateX(0); opacity: 1; }
+    to { transform: translateX(400px); opacity: 0; }
+  }
+`;
+document.head.appendChild(style);
+</script>
+<script th:src="@{/js/toast.js}"></script>
+
+</body>
+</html>
