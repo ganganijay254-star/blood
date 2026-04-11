@@ -1,0 +1,118 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Visit Hospital | BloodCare</title>
+
+  <!-- CSS -->
+  <link rel="stylesheet" th:href="@{/css/common.css}">
+  <link rel="icon" href="data:,">
+
+  <style>
+    .visit-container {
+      max-width: 900px;
+      margin: auto;
+      padding: 30px;
+    }
+
+    .visit-header {
+      text-align: center;
+      margin-bottom: 30px;
+    }
+
+    .location-box {
+      background: #fff;
+      padding: 16px;
+      border-radius: 14px;
+      margin-bottom: 24px;
+      box-shadow: 0 10px 30px rgba(0,0,0,.1);
+    }
+
+    .hospital-list {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
+      gap: 20px;
+    }
+
+    .hospital-card {
+      background: #fff;
+      padding: 20px;
+      border-radius: 18px;
+      box-shadow: 0 12px 35px rgba(0,0,0,.12);
+    }
+
+    .hospital-card h3 {
+      color: var(--primary);
+      margin-bottom: 6px;
+    }
+
+    .hospital-card p {
+      font-size: 14px;
+      color: #475569;
+      margin-bottom: 10px;
+    }
+
+    .hospital-card span {
+      font-size: 13px;
+      color: #16a34a;
+      font-weight: 600;
+    }
+
+    .hospital-card button {
+      margin-top: 12px;
+      width: 100%;
+    }
+
+    .loading {
+      text-align: center;
+      font-size: 14px;
+      color: #64748b;
+    }
+  </style>
+</head>
+<body>
+
+<div class="page-bg">
+  <header class="navbar">
+    <div class="logo">🩸 BloodCare</div>
+    <nav>
+      <a th:href="@{/donor-dashboard}" class="btn">Dashboard</a>
+      <a th:href="@{/}">Home</a>
+      <a th:href="@{/about}">About</a>
+    </nav>
+  </header>
+
+  <section class="visit-container">
+
+    <div class="visit-header">
+      <h2>Find Nearby Hospitals</h2>
+      <p>Based on your current location</p>
+    </div>
+
+    <div class="location-box" id="locationBox">
+      📍 Detecting your location... (Please allow location access)
+    </div>
+
+    <div class="loading" id="loading">
+      Loading nearby hospitals...
+    </div>
+
+    <div class="hospital-list" id="hospitalList"></div>
+
+  </section>
+
+  <p id="noDataMsg" style="display:none; text-align:center; color:#64748b;">
+    No hospitals found near your location.
+  </p>
+
+</div>
+
+<!-- JS -->
+<script th:src="@{/js/visit.js}"></script>
+
+<!-- Chatbot Widget -->
+<script th:src="@{/js/chatbot-widget.js}"></script>
+
+</body>
+</html>

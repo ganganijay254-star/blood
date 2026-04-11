@@ -1,0 +1,258 @@
+<!doctype html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>BloodCare | Donate, Request, Track</title>
+  <link rel="stylesheet" th:href="@{/css/common.css}" />
+  <link rel="stylesheet" th:href="@{/css/home.css}" />
+</head>
+<body class="home-page">
+  <header class="navbar">
+    <div class="logo">BloodCare</div>
+    <nav id="mainNav"></nav>
+  </header>
+
+  <div class="blood-overlay" id="blood" aria-hidden="true"></div>
+
+  <main class="home-shell">
+    <section class="hero">
+      <div class="hero-copy" data-reveal>
+        <span class="eyebrow">Live donation network</span>
+        <h1 class="hero-title" aria-label="Prepared donors. Faster matches. Calmer emergencies.">
+          <span class="hero-title-line" data-text="Prepared donors."></span>
+          <span class="hero-title-line" data-text="Faster matches."></span>
+          <span class="hero-title-line" data-text="Calmer emergencies."></span>
+        </h1>
+        <p>
+          BloodCare helps donors, hospitals, and families move from urgent request
+          to confirmed visit with one clean workflow for matching, tracking,
+          certificates, and follow-up.
+        </p>
+
+        <div class="hero-buttons">
+          <a href="javascript:void(0)" onclick="goToDonor()" class="btn">Become a Donor</a>
+          <a href="javascript:void(0)" onclick="goToReceiver()" class="btn-outline">Request Blood</a>
+        </div>
+
+        <div class="hero-notes">
+          <span>Verified donor journeys</span>
+          <span>Hospital visit scheduling</span>
+          <span>Certificates and history</span>
+        </div>
+      </div>
+
+      <aside class="hero-panel surface-card" data-reveal>
+        <div class="panel-badge">Platform rhythm</div>
+
+        <div class="hero-stats">
+          <article class="hero-stat">
+            <strong>01</strong>
+            <span>Single place to request, track, and confirm a donation visit.</span>
+          </article>
+          <article class="hero-stat">
+            <strong>90d</strong>
+            <span>Donation gap guidance so eligibility stays visible at a glance.</span>
+          </article>
+          <article class="hero-stat">
+            <strong>24x7</strong>
+            <span>Emergency-ready receiver flow with location-aware matching support.</span>
+          </article>
+        </div>
+
+        <div class="hero-process">
+          <h2>How BloodCare flows</h2>
+          <ol>
+            <li>Create a donor or receiver account.</li>
+            <li>Submit a visit request or urgent blood request.</li>
+            <li>Track approvals, rewards, certificates, and next steps.</li>
+          </ol>
+        </div>
+      </aside>
+    </section>
+
+    <section class="story-ribbon surface-card" data-reveal>
+      <div>
+        <span class="eyebrow">Why it matters</span>
+        <h2>Built for clarity when every minute feels noisy.</h2>
+      </div>
+      <p>
+        Instead of scattered updates and guesswork, BloodCare keeps donors,
+        hospitals, and patients aligned with simple status tracking and a more
+        confident handoff from request to response.
+      </p>
+    </section>
+
+    <section class="live-board">
+      <div class="section-header" data-reveal>
+        <span class="eyebrow">Live Pulse</span>
+        <h2>What the network looks like right now.</h2>
+      </div>
+
+      <div class="pulse-stats-grid">
+        <article class="pulse-stat-card surface-card" data-reveal>
+          <span class="pulse-stat-card__label">Ready donors</span>
+          <strong id="publicDonorsCount">0</strong>
+          <p>Profiles ready to respond when a verified request appears.</p>
+        </article>
+        <article class="pulse-stat-card surface-card" data-reveal>
+          <span class="pulse-stat-card__label">Completed donations</span>
+          <strong id="publicDonationCount">0</strong>
+          <p>Approved donation visits already coordinated through BloodCare.</p>
+        </article>
+        <article class="pulse-stat-card surface-card" data-reveal>
+          <span class="pulse-stat-card__label">Available units</span>
+          <strong id="publicUnitsCount">0</strong>
+          <p>Visible stock across connected hospitals and blood banks.</p>
+        </article>
+        <article class="pulse-stat-card surface-card" data-reveal>
+          <span class="pulse-stat-card__label">Live requests</span>
+          <strong id="publicActiveRequestsCount">0</strong>
+          <p>Requests currently moving through approval, matching, or response.</p>
+        </article>
+      </div>
+
+      <div class="pulse-layout">
+        <article class="pulse-panel surface-card" data-reveal>
+          <div class="pulse-panel__head">
+            <div>
+              <span class="eyebrow">Emergency watch</span>
+              <h2>Requests moving right now</h2>
+            </div>
+            <span class="pulse-panel__hint">Priority queue</span>
+          </div>
+          <div id="criticalRequestsFeed" class="request-ticker">
+            <div class="pulse-empty">Loading live request pulse...</div>
+          </div>
+        </article>
+
+        <article class="pulse-panel surface-card" data-reveal>
+          <div class="pulse-panel__head">
+            <div>
+              <span class="eyebrow">Supply snapshot</span>
+              <h2>Blood group and city pulse</h2>
+            </div>
+            <span class="pulse-panel__hint">Updated from live records</span>
+          </div>
+
+          <div id="bloodGroupStockStrip" class="stock-strip">
+            <div class="pulse-empty">Checking blood group availability...</div>
+          </div>
+
+          <div class="city-pulse-wrap">
+            <h3>Demand by city</h3>
+            <div id="cityPulseBoard" class="city-pulse">
+              <div class="pulse-empty">Loading city demand pulse...</div>
+            </div>
+          </div>
+        </article>
+      </div>
+    </section>
+
+    <section class="feature-section">
+      <div class="section-header">
+        <span class="eyebrow">Core strengths</span>
+        <h2>Everything important is visible fast.</h2>
+      </div>
+
+      <div class="feature-grid">
+        <article class="feature-card" data-reveal>
+          <h3>Verified donor activity</h3>
+          <p>Keep trusted donor records, visit history, and eligibility signals in one place.</p>
+        </article>
+        <article class="feature-card" data-reveal>
+          <h3>Urgent request coordination</h3>
+          <p>Help receiver requests move quickly with status tracking and nearby matching support.</p>
+        </article>
+        <article class="feature-card" data-reveal>
+          <h3>Recognition that feels earned</h3>
+          <p>Certificates, badges, and rewards make long-term donation habits visible and motivating.</p>
+        </article>
+      </div>
+    </section>
+
+    <section class="journey-section">
+      <div class="section-header">
+        <span class="eyebrow">Journey map</span>
+        <h2>Designed around donor momentum and emergency clarity.</h2>
+      </div>
+
+      <div class="journey-grid">
+        <article class="journey-card" data-reveal>
+          <span class="journey-step">01</span>
+          <h3>Register with confidence</h3>
+          <p>Create an account, complete your donor profile, and keep your details ready.</p>
+        </article>
+        <article class="journey-card" data-reveal>
+          <span class="journey-step">02</span>
+          <h3>Request or respond</h3>
+          <p>Choose a donation visit or start a receiver request when blood is needed.</p>
+        </article>
+        <article class="journey-card" data-reveal>
+          <span class="journey-step">03</span>
+          <h3>Track the next step</h3>
+          <p>Follow approvals, donation history, certificates, and eligibility without confusion.</p>
+        </article>
+        <article class="journey-card journey-card--highlight" data-reveal>
+          <span class="journey-step">Need help fast?</span>
+          <h3>Receiver tools stay close to the action.</h3>
+          <p>Blood requests, tracking, and nearby source discovery all stay on the same platform.</p>
+          <a href="javascript:void(0)" onclick="goToReceiver()" class="btn btn-compact">Open Receiver Flow</a>
+        </article>
+      </div>
+    </section>
+
+    <section class="faq-layout">
+      <article class="faq-copy surface-card" data-reveal>
+        <span class="eyebrow">Donation basics</span>
+        <h2>Useful information before you book a visit.</h2>
+        <ul class="info-list">
+          <li>Typical donor age range is 18 to 65 years.</li>
+          <li>Most donors should weigh at least 50 kg.</li>
+          <li>You should feel healthy and well on donation day.</li>
+          <li>Your dashboard keeps visit records and certificates accessible.</li>
+        </ul>
+      </article>
+
+      <article class="faq-card surface-card" data-reveal>
+        <span class="eyebrow">Quick answers</span>
+        <h2>Common questions</h2>
+        <div class="faq-items">
+          <details>
+            <summary>How often can I donate blood?</summary>
+            <p>Most healthy adults can donate whole blood roughly every 3 months.</p>
+          </details>
+          <details>
+            <summary>Is donation safe?</summary>
+            <p>Yes. Hospitals use sterile, regulated procedures for safe collection.</p>
+          </details>
+          <details>
+            <summary>Can I review my donation records later?</summary>
+            <p>Yes. Visit history, certificates, and request updates are available from your account.</p>
+          </details>
+        </div>
+      </article>
+    </section>
+
+    <section class="cta-banner surface-card" data-reveal>
+      <div>
+        <span class="eyebrow">Start here</span>
+        <h2>Join the network before the next emergency arrives.</h2>
+        <p>Register once, keep your profile ready, and let the platform handle the coordination.</p>
+      </div>
+      <div class="cta-banner__actions">
+        <a th:href="@{/signup}" class="btn">Create Account</a>
+        <a th:href="@{/about}" class="btn-outline">Learn More</a>
+      </div>
+    </section>
+  </main>
+
+  <footer>
+    <p>&copy; 2026 BloodCare. Built for reliable donation coordination.</p>
+  </footer>
+
+  <script th:src="@{/js/index.js}"></script>
+  <script th:src="@{/js/chatbot-widget.js}"></script>
+  <script th:src="@{/js/toast.js}"></script>
+</body>
+</html>

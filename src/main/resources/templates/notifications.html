@@ -1,0 +1,530 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Notifications | BloodCare</title>
+    <link rel="stylesheet" th:href="@{/css/common.css}">
+    <link rel="stylesheet" th:href="@{/css/dashboard.css}">
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            font-family: 'Poppins', sans-serif;
+        }
+
+        .container {
+            max-width: 900px;
+            margin: 0 auto;
+            padding: 20px;
+        }
+
+        .header {
+            background: white;
+            padding: 30px;
+            border-radius: 15px;
+            margin-bottom: 30px;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.1);
+        }
+
+        .header h1 {
+            font-size: 28px;
+            color: #333;
+            margin-bottom: 10px;
+        }
+
+        .header p {
+            color: #666;
+            font-size: 14px;
+        }
+
+        .tabs {
+            display: flex;
+            gap: 10px;
+            margin-bottom: 30px;
+        }
+
+        .tab-btn {
+            padding: 10px 20px;
+            border: 2px solid white;
+            background: transparent;
+            color: white;
+            border-radius: 25px;
+            cursor: pointer;
+            font-weight: 600;
+            transition: all 0.3s;
+            font-size: 14px;
+        }
+
+        .tab-btn.active {
+            background: white;
+            color: #667eea;
+        }
+
+        .tab-btn:hover {
+            background: rgba(255,255,255,0.2);
+        }
+
+        .notifications-list {
+            display: grid;
+            gap: 15px;
+        }
+
+        .notification-card {
+            background: white;
+            border-radius: 15px;
+            padding: 20px;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.1);
+            transition: all 0.3s;
+            border-left: 5px solid #667eea;
+            animation: slideIn 0.5s ease-out;
+        }
+
+        @keyframes slideIn {
+            from {
+                opacity: 0;
+                transform: translateX(-20px);
+            }
+            to {
+                opacity: 1;
+                transform: translateX(0);
+            }
+        }
+
+        .notification-card.unread {
+            background: rgba(102, 126, 234, 0.05);
+        }
+
+        .notification-card.blood-delivery {
+            border-left-color: #dc2626;
+        }
+
+        .notification-card.blood-delivery .icon {
+            color: #dc2626;
+        }
+
+        .notification-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: start;
+            margin-bottom: 15px;
+        }
+
+        .notification-title {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            flex: 1;
+        }
+
+        .icon {
+            font-size: 24px;
+            color: #667eea;
+        }
+
+        .title-text {
+            display: flex;
+            flex-direction: column;
+        }
+
+        .title-text h3 {
+            font-size: 16px;
+            color: #333;
+            margin-bottom: 3px;
+            font-weight: 600;
+        }
+
+        .title-text span {
+            font-size: 12px;
+            color: #999;
+        }
+
+        .actions {
+            display: flex;
+            gap: 10px;
+        }
+
+        .action-btn {
+            width: 32px;
+            height: 32px;
+            border: none;
+            border-radius: 8px;
+            background: #f0f0f0;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            transition: all 0.3s;
+            font-size: 16px;
+        }
+
+        .action-btn:hover {
+            background: #e0e0e0;
+        }
+
+        .notification-message {
+            color: #555;
+            font-size: 14px;
+            line-height: 1.6;
+            margin-bottom: 15px;
+        }
+
+        .delivery-details {
+            background: #f8f9fa;
+            border-radius: 10px;
+            padding: 15px;
+            margin-top: 15px;
+            border-left: 4px solid #dc2626;
+        }
+
+        .detail-row {
+            display: flex;
+            justify-content: space-between;
+            padding: 8px 0;
+            font-size: 13px;
+            border-bottom: 1px solid #eee;
+        }
+
+        .detail-row:last-child {
+            border-bottom: none;
+        }
+
+        .detail-label {
+            color: #999;
+            font-weight: 500;
+        }
+
+        .detail-value {
+            color: #333;
+            font-weight: 600;
+        }
+
+        .empty-state {
+            text-align: center;
+            padding: 60px 20px;
+            background: white;
+            border-radius: 15px;
+        }
+
+        .empty-icon {
+            font-size: 60px;
+            margin-bottom: 20px;
+        }
+
+        .empty-state h2 {
+            font-size: 20px;
+            color: #333;
+            margin-bottom: 10px;
+        }
+
+        .empty-state p {
+            color: #999;
+            font-size: 14px;
+        }
+
+        .action-bar {
+            background: white;
+            padding: 15px;
+            border-radius: 15px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 20px;
+            box-shadow: 0 5px 15px rgba(0,0,0,0.05);
+        }
+
+        .action-bar button {
+            padding: 10px 20px;
+            border: none;
+            border-radius: 8px;
+            background: #667eea;
+            color: white;
+            cursor: pointer;
+            font-weight: 600;
+            transition: all 0.3s;
+            font-size: 13px;
+        }
+
+        .action-bar button:hover {
+            background: #5568d3;
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(102, 126, 234, 0.3);
+        }
+
+        .notification-time {
+            color: #999;
+            font-size: 12px;
+        }
+
+        @media (max-width: 768px) {
+            .container {
+                padding: 15px;
+            }
+
+            .header {
+                padding: 20px;
+            }
+
+            .header h1 {
+                font-size: 22px;
+            }
+
+            .tabs {
+                flex-wrap: wrap;
+            }
+
+            .tab-btn {
+                flex: 1;
+                min-width: 120px;
+            }
+
+            .notification-card {
+                padding: 15px;
+            }
+
+            .notification-header {
+                flex-direction: column;
+            }
+
+            .actions {
+                margin-top: 10px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <!-- Navigation -->
+    <nav th:replace="fragments/navbar :: navbar"></nav>
+
+    <div class="container">
+        <!-- Header -->
+        <div class="header">
+            <h1>🔔 Notifications</h1>
+            <p>Stay updated with your blood requests and delivery status</p>
+        </div>
+
+        <!-- Tabs -->
+        <div class="tabs">
+            <button class="tab-btn active" onclick="filterNotifications('all')">All</button>
+            <button class="tab-btn" onclick="filterNotifications('unread')">Unread</button>
+            <button class="tab-btn" onclick="filterNotifications('delivery')">Blood Delivery</button>
+        </div>
+
+        <!-- Action Bar -->
+        <div class="action-bar" id="actionBar" style="display: none;">
+            <span id="selectedCount">0 selected</span>
+            <button onclick="markAllAsRead()">Mark as Read</button>
+        </div>
+
+        <!-- Notifications List -->
+        <div class="notifications-list" id="notificationsList">
+            <div class="empty-state">
+                <div class="empty-icon">📭</div>
+                <h2>No Notifications Yet</h2>
+                <p>Your notifications will appear here</p>
+            </div>
+        </div>
+    </div>
+
+    <!-- Toast Notifications -->
+    <div id="toast" class="toast" style="display: none;"></div>
+
+    <script>
+        let currentFilter = 'all';
+        let allNotifications = [];
+        let selectedNotifications = new Set();
+
+        // Load notifications on page load
+        document.addEventListener('DOMContentLoaded', function() {
+            loadNotifications();
+            // Refresh every 30 seconds
+            setInterval(loadNotifications, 30000);
+        });
+
+        function loadNotifications() {
+            const endpoint = currentFilter === 'all' ? '/api/notifications/all'
+                           : currentFilter === 'unread' ? '/api/notifications/unread'
+                           : '/api/notifications/blood-deliveries';
+
+            fetch(endpoint)
+                .then(response => response.json())
+                .then(data => {
+                    if (Array.isArray(data)) {
+                        allNotifications = data;
+                    } else if (data.notifications) {
+                        allNotifications = data.notifications;
+                    }
+                    renderNotifications();
+                })
+                .catch(error => {
+                    console.error('Error loading notifications:', error);
+                    showToast('Error loading notifications', 'error');
+                });
+        }
+
+        function renderNotifications() {
+            const container = document.getElementById('notificationsList');
+
+            if (allNotifications.length === 0) {
+                container.innerHTML = `
+                    <div class="empty-state">
+                        <div class="empty-icon">📭</div>
+                        <h2>No ${currentFilter === 'delivery' ? 'Blood Delivery' : 'Unread'} Notifications</h2>
+                        <p>Your notifications will appear here</p>
+                    </div>
+                `;
+                return;
+            }
+
+            container.innerHTML = allNotifications.map(notif => `
+                <div class="notification-card ${!notif.read ? 'unread' : ''} ${notif.type === 'BLOOD_DELIVERY' ? 'blood-delivery' : ''}" 
+                     data-id="${notif.id}">
+                    <div class="notification-header">
+                        <div class="notification-title">
+                            <span class="icon">${getIconForType(notif.type)}</span>
+                            <div class="title-text">
+                                <h3>${notif.title}</h3>
+                                <span class="notification-time">${formatDate(notif.createdDate)}</span>
+                            </div>
+                        </div>
+                        <div class="actions">
+                            <button class="action-btn" onclick="markAsRead(${notif.id})" title="Mark as read">✓</button>
+                            <button class="action-btn" onclick="deleteNotification(${notif.id})" title="Delete">✕</button>
+                        </div>
+                    </div>
+                    <div class="notification-message">${notif.message}</div>
+                    ${notif.type === 'BLOOD_DELIVERY' ? getDeliveryDetails(notif) : ''}
+                </div>
+            `).join('');
+        }
+
+        function getIconForType(type) {
+            switch(type) {
+                case 'BLOOD_DELIVERY': return '🩸';
+                case 'BLOOD_REQUEST_APPROVED': return '✅';
+                default: return '📢';
+            }
+        }
+
+        function getDeliveryDetails(notif) {
+            if (!notif.bloodGroup) return '';
+            
+            return `
+                <div class="delivery-details">
+                    <div class="detail-row">
+                        <span class="detail-label">Blood Group:</span>
+                        <span class="detail-value">${notif.bloodGroup}</span>
+                    </div>
+                    <div class="detail-row">
+                        <span class="detail-label">Units:</span>
+                        <span class="detail-value">${notif.unitsDelivered}</span>
+                    </div>
+                    <div class="detail-row">
+                        <span class="detail-label">Hospital:</span>
+                        <span class="detail-value">${notif.hospitalName}</span>
+                    </div>
+                    <div class="detail-row">
+                        <span class="detail-label">Location:</span>
+                        <span class="detail-value">${notif.location}</span>
+                    </div>
+                    <div class="detail-row">
+                        <span class="detail-label">Expected Delivery:</span>
+                        <span class="detail-value">${notif.expectedDeliveryTime}</span>
+                    </div>
+                </div>
+            `;
+        }
+
+        function filterNotifications(filter) {
+            currentFilter = filter;
+            document.querySelectorAll('.tab-btn').forEach(btn => btn.classList.remove('active'));
+            event.target.classList.add('active');
+            loadNotifications();
+        }
+
+        function markAsRead(notificationId) {
+            fetch(`/api/notifications/mark-read/${notificationId}`, { method: 'POST' })
+                .then(response => response.json())
+                .then(data => {
+                    if (data.success) {
+                        loadNotifications();
+                        showToast('Notification marked as read', 'success');
+                    }
+                })
+                .catch(error => {
+                    console.error('Error marking notification as read:', error);
+                    showToast('Error marking notification as read', 'error');
+                });
+        }
+
+        function deleteNotification(notificationId) {
+            const doDelete = () => {
+                fetch(`/api/notifications/delete/${notificationId}`, { method: 'DELETE' })
+                    .then(response => response.json())
+                    .then(data => {
+                        if (data.success) {
+                            loadNotifications();
+                            if (typeof localShow === 'function') localShow('Notification deleted', 'success'); else showToast('Notification deleted', 'success');
+                        }
+                    })
+                    .catch(error => {
+                        console.error('Error deleting notification:', error);
+                        if (typeof localShow === 'function') localShow('Error deleting notification', 'error'); else showToast('Error deleting notification', 'error');
+                    });
+            };
+
+            if (typeof showConfirm === 'function') {
+                showConfirm('Delete this notification?', doDelete);
+            } else {
+                if (confirm('Delete this notification?')) doDelete();
+            }
+        }
+
+        function markAllAsRead() {
+            fetch('/api/notifications/mark-all-read', { method: 'POST' })
+                .then(response => response.json())
+                .then(data => {
+                    if (data.success) {
+                        loadNotifications();
+                        showToast('All notifications marked as read', 'success');
+                    }
+                })
+                .catch(error => {
+                    console.error('Error marking all notifications as read:', error);
+                    showToast('Error marking notifications as read', 'error');
+                });
+        }
+
+        function formatDate(dateString) {
+            const date = new Date(dateString);
+            const now = new Date();
+            const diff = now - date;
+            const hours = Math.floor(diff / (1000 * 60 * 60));
+            const minutes = Math.floor(diff / (1000 * 60));
+
+            if (minutes < 1) return 'Just now';
+            if (minutes < 60) return `${minutes}m ago`;
+            if (hours < 24) return `${hours}h ago`;
+            
+            return date.toLocaleDateString();
+        }
+
+        function showToast(message, type = 'info') {
+            const toast = document.getElementById('toast');
+            toast.textContent = message;
+            toast.className = `toast ${type}`;
+            toast.style.display = 'block';
+            setTimeout(() => {
+                toast.style.display = 'none';
+            }, 3000);
+        }
+    </script>
+    <script th:src="@{/js/toast.js}"></script>
+</body>
+</html>

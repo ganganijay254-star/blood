@@ -1,0 +1,12 @@
+{"properties": [
+  {
+    "name": "937961253754-dh9rkkanuq0ou0hih7lfrpimn92gtfp4.apps.googleusercontent.com",
+    "type": "java.lang.String",
+    "description": "A description for '937961253754-dh9rkkanuq0ou0hih7lfrpimn92gtfp4.apps.googleusercontent.com'"
+  },
+  {
+    "name": "google.maps.api.key",
+    "type": "java.lang.String",
+    "description": "A description for 'google.maps.api.key'"
+  }
+]}

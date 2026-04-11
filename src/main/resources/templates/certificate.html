@@ -1,0 +1,468 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Donation Certificate | BloodCare</title>
+    <link rel="stylesheet" th:href="@{/css/common.css}">
+    <style>
+        * { box-sizing: border-box; }
+
+        body {
+            margin: 0;
+            padding: 10px;
+            background: #f1f5f9;
+            font-family: "Segoe UI", Tahoma, sans-serif;
+            overflow: hidden;
+        }
+
+        .certificate-container {
+            width: min(960px, 100%);
+            max-height: calc(100vh - 20px);
+            margin: 0 auto;
+            padding: 18px 22px;
+            border-radius: 18px;
+            background: linear-gradient(180deg, #fff 0%, #f8fbff 100%);
+            border: 2px solid #e5e7eb;
+            box-shadow: 0 14px 45px rgba(15, 23, 42, 0.16);
+            position: relative;
+            overflow: hidden;
+        }
+
+        .top-strip {
+            position: absolute;
+            left: 0;
+            top: 0;
+            width: 100%;
+            height: 6px;
+            background: linear-gradient(90deg, #b91c1c, #ef4444, #b91c1c);
+        }
+
+        .qr-corner {
+            position: absolute;
+            top: 14px;
+            right: 14px;
+            width: 144px;
+            background: #fff;
+            border: 2px solid #ef4444;
+            border-radius: 12px;
+            padding: 10px 10px 12px;
+            text-align: center;
+            box-shadow: 0 6px 18px rgba(239, 68, 68, 0.22);
+            z-index: 4;
+        }
+
+        .qr-corner p {
+            margin: 0 0 5px 0;
+            font-size: 10px;
+            color: #7f1d1d;
+            font-weight: 700;
+            text-transform: uppercase;
+            letter-spacing: .6px;
+        }
+
+        #qrCode {
+            width: 100px;
+            min-height: 100px;
+            margin: 0 auto 8px;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            gap: 8px;
+        }
+
+        #qrCode img {
+            width: 100px;
+            height: 100px;
+            display: block;
+            margin: 0 auto;
+            border-radius: 6px;
+            object-fit: contain;
+        }
+
+        #qrCode a {
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            min-height: 28px;
+            padding: 6px 10px;
+            font-size: 11px;
+            line-height: 1.2;
+            color: #1d4ed8;
+            word-break: normal;
+            text-decoration: none;
+            text-align: center;
+            border-radius: 999px;
+            background: #eff6ff;
+            border: 1px solid #bfdbfe;
+            white-space: nowrap;
+        }
+
+        .header {
+            text-align: center;
+            margin-top: 16px;
+            padding-right: 150px;
+        }
+
+        .logo-row {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            gap: 12px;
+        }
+
+        .logo-drop {
+            font-size: 40px;
+            line-height: 1;
+        }
+
+        .brand {
+            font-size: 50px;
+            line-height: 1;
+            margin: 0;
+            color: #dc2626;
+            font-weight: 800;
+            letter-spacing: 1px;
+        }
+
+        .sub {
+            margin: 6px 0 0 0;
+            font-size: 15px;
+            color: #334155;
+            font-weight: 600;
+            letter-spacing: .8px;
+        }
+
+        .verify-note {
+            margin: 4px 0 0;
+            font-size: 10px;
+            color: #7f1d1d;
+            line-height: 1.35;
+        }
+
+        .hero {
+            margin: 16px 0 12px 0;
+            padding: 14px 18px;
+            border-radius: 14px;
+            border: 2px solid #fee2e2;
+            background: linear-gradient(135deg, #fff1f2 0%, #fef3c7 100%);
+            text-align: center;
+        }
+
+        .hero h2 {
+            margin: 0 0 8px 0;
+            color: #9f1239;
+            font-size: 36px;
+            font-weight: 800;
+            font-style: italic;
+        }
+
+        .hero p {
+            margin: 5px 0;
+            color: #334155;
+            font-size: 19px;
+        }
+
+        .hero strong {
+            color: #b91c1c;
+            text-decoration: underline;
+            text-decoration-color: #ef4444;
+        }
+
+        .details {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 10px;
+            margin-top: 10px;
+        }
+
+        .item {
+            background: #fff;
+            border: 1px solid #e2e8f0;
+            border-left: 4px solid #dc2626;
+            border-radius: 10px;
+            padding: 10px 12px;
+        }
+
+        .label {
+            font-size: 10px;
+            color: #dc2626;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            font-weight: 700;
+            margin-bottom: 4px;
+        }
+
+        .value {
+            font-size: 24px;
+            color: #0f172a;
+            font-weight: 700;
+            line-height: 1.2;
+            word-break: break-word;
+        }
+
+        .thanks {
+            margin-top: 11px;
+            padding: 10px 14px;
+            border-radius: 10px;
+            border: 1px dashed #f87171;
+            background: #fff7ed;
+            text-align: center;
+            color: #7c2d12;
+            font-weight: 600;
+            font-size: 15px;
+        }
+
+        .footer {
+            margin-top: 10px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            gap: 10px;
+            padding-top: 9px;
+            border-top: 1px solid #e2e8f0;
+            color: #475569;
+            font-size: 13px;
+        }
+
+        .footer strong { color: #1e293b; }
+
+        .stamp {
+            position: absolute;
+            right: 28px;
+            bottom: 78px;
+            width: 128px;
+            height: 128px;
+            border: 3px dashed rgba(185, 28, 28, 0.55);
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            text-align: center;
+            font-size: 11px;
+            line-height: 1.25;
+            font-weight: 800;
+            color: rgba(127, 29, 29, 0.66);
+            transform: rotate(-16deg);
+            background: rgba(254, 242, 242, 0.45);
+            letter-spacing: .5px;
+            pointer-events: none;
+        }
+
+        .action-buttons {
+            display: flex;
+            justify-content: center;
+            gap: 14px;
+            margin-top: 12px;
+        }
+
+        .btn {
+            border: none;
+            border-radius: 8px;
+            padding: 10px 16px;
+            font-size: 14px;
+            font-weight: 700;
+            cursor: pointer;
+            color: #fff;
+        }
+
+        .btn-print { background: linear-gradient(135deg, #dc2626, #991b1b); }
+        .btn-back { background: linear-gradient(135deg, #2563eb, #1d4ed8); }
+
+        @media print {
+            body {
+                padding: 0;
+                background: #fff;
+                overflow: visible;
+            }
+            .certificate-container {
+                width: 100%;
+                max-height: none;
+                border: none;
+                border-radius: 0;
+                box-shadow: none;
+                padding: 20px;
+            }
+            .top-strip { height: 4px; }
+            .action-buttons { display: none; }
+            .stamp {
+                right: 18px;
+                bottom: 18px;
+                background: rgba(255, 255, 255, 0.2);
+            }
+        }
+
+        @media (max-width: 760px) {
+            body { overflow: auto; }
+            .certificate-container { max-height: none; }
+            .qr-corner {
+                position: static;
+                width: 148px;
+                margin: 0 auto 10px auto;
+            }
+            #qrCode, #qrCode img { width: 88px; height: 88px; }
+            #qrCode { min-height: 88px; }
+            #qrCode a {
+                white-space: normal;
+                width: 100%;
+            }
+            .header { padding-right: 0; }
+            .brand { font-size: 40px; }
+            .hero h2 { font-size: 31px; }
+            .details { grid-template-columns: 1fr; }
+            .value { font-size: 21px; }
+            .footer { flex-direction: column; align-items: flex-start; }
+            .action-buttons { flex-direction: column; }
+            .stamp {
+                position: static;
+                width: 100px;
+                height: 100px;
+                margin: 10px auto 0 auto;
+                transform: rotate(-10deg);
+            }
+        }
+    </style>
+</head>
+<body>
+
+<div class="certificate-container">
+    <div class="top-strip"></div>
+
+    <div class="qr-corner">
+        <p>Verify</p>
+        <div id="qrCode"></div>
+        <div class="verify-note">Scan QR or open the verification page.</div>
+    </div>
+
+    <div class="header">
+        <div class="logo-row">
+            <span class="logo-drop">🩸</span>
+            <h1 class="brand">BloodCare</h1>
+        </div>
+        <p class="sub">Official Blood Donation Certificate</p>
+    </div>
+
+    <div class="hero">
+        <h2>Certificate of Appreciation</h2>
+        <p>This certifies that <strong id="donorName">—</strong></p>
+        <p>has proudly donated blood at <strong id="hospital">—</strong></p>
+    </div>
+
+    <div class="details">
+        <div class="item">
+            <div class="label">Donation Date</div>
+            <div class="value" id="donationDate">—</div>
+        </div>
+        <div class="item">
+            <div class="label">Units Donated</div>
+            <div class="value" id="units">—</div>
+        </div>
+        <div class="item">
+            <div class="label">Blood Group</div>
+            <div class="value" id="bloodGroup">—</div>
+        </div>
+        <div class="item">
+            <div class="label">Certificate Number</div>
+            <div class="value" id="certNumber">—</div>
+        </div>
+    </div>
+
+    <div class="thanks">
+        Your donation can save multiple lives. BloodCare salutes your contribution.
+    </div>
+
+    <div class="footer">
+        <div><strong>Certificate ID:</strong> <span id="fullCertNumber">—</span></div>
+        <div><strong>Issued By:</strong> BloodCare Donation Program</div>
+    </div>
+
+    <div class="stamp">BLOODCARE<br>VERIFIED<br>DONATION</div>
+
+    <div class="action-buttons">
+        <button class="btn btn-print" onclick="downloadCertificate()">Print Certificate</button>
+        <button class="btn btn-back" onclick="goBack()">Back to Dashboard</button>
+    </div>
+</div>
+
+<script>
+    function generateQRCode(text, elementId) {
+        const element = document.getElementById(elementId);
+        element.innerHTML = '';
+
+        const encodedText = encodeURIComponent(text);
+        const providers = [
+            `https://api.qrserver.com/v1/create-qr-code/?size=120x120&data=${encodedText}`,
+            `https://chart.googleapis.com/chart?cht=qr&chs=120x120&chl=${encodedText}`
+        ];
+
+        const img = document.createElement('img');
+        img.alt = 'QR Code';
+
+        let index = 0;
+        img.onerror = function () {
+            index += 1;
+            if (index < providers.length) {
+                img.src = providers[index];
+                return;
+            }
+
+            const fallback = document.createElement('div');
+            fallback.style.cssText = 'width:100px;height:100px;border:2px dashed #ef4444;border-radius:8px;display:flex;align-items:center;justify-content:center;font-size:10px;font-weight:700;color:#7f1d1d;padding:6px;text-align:center;';
+            fallback.innerText = 'QR unavailable';
+            element.innerHTML = '';
+            element.appendChild(fallback);
+        };
+
+        element.appendChild(img);
+
+        const verifyLink = document.createElement('a');
+        verifyLink.href = text;
+        verifyLink.target = '_blank';
+        verifyLink.rel = 'noopener noreferrer';
+        verifyLink.innerText = 'Open Verify';
+        element.appendChild(verifyLink);
+
+        img.src = providers[index];
+    }
+
+    const params = new URLSearchParams(window.location.search);
+    const certId = params.get('id');
+
+    if (!certId) {
+        document.body.innerHTML = '<h2 style="text-align:center; margin-top:50px; color:#dc2626;">Certificate not found</h2>';
+    } else {
+        Promise.all([
+            fetch(`/api/certificate/${certId}`, { credentials: 'include' }).then(res => res.json()),
+            fetch('/api/certificate/public-base-url', { credentials: 'include' })
+                .then(res => res.ok ? res.text() : window.location.origin)
+                .catch(() => window.location.origin)
+        ])
+            .then(([cert, baseUrl]) => {
+                document.getElementById('donorName').innerText = cert.donor?.user?.name || 'Donor';
+                document.getElementById('hospital').innerText = cert.hospitalName || 'Hospital';
+                document.getElementById('donationDate').innerText = cert.donationDate || '—';
+                document.getElementById('units').innerText = (cert.units || '—') + ' units';
+                document.getElementById('bloodGroup').innerText = cert.donor?.bloodGroup || '—';
+                document.getElementById('certNumber').innerText = cert.certificateNumber || '—';
+                document.getElementById('fullCertNumber').innerText = cert.certificateNumber || '—';
+
+                const verificationUrl = `${baseUrl}/verify-certificate?cert=${cert.certificateNumber}`;
+                generateQRCode(verificationUrl, 'qrCode');
+            })
+            .catch(() => {
+                document.body.innerHTML = '<h2 style="text-align:center; margin-top:50px; color:#dc2626;">Error loading certificate</h2>';
+            });
+    }
+
+    function downloadCertificate() {
+        window.print();
+    }
+
+    function goBack() {
+        window.location.href = '/donor-dashboard';
+    }
+</script>
+
+</body>
+</html>

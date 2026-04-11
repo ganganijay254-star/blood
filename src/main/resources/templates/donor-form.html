@@ -1,0 +1,302 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Complete Donor Profile | BloodCare</title>
+
+  <!-- CSS -->
+  <link rel="stylesheet" th:href="@{/css/common.css}">
+  <link rel="stylesheet" th:href="@{/css/auth.css}">
+  <style>
+    .donor-form-shell {
+      width: min(980px, calc(100% - 1rem));
+      margin: 0 auto;
+      padding: 1rem 0 2.5rem;
+    }
+
+    .donor-form-card {
+      gap: 1.15rem;
+    }
+
+    .donor-form-card .card-head {
+      margin-bottom: 0.2rem;
+    }
+
+    .donor-form-card .form-row {
+      display: grid;
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+      gap: 1rem;
+    }
+
+    .donor-form-card .input-group {
+      margin-bottom: 0;
+    }
+
+    .donor-form-card .input-group.is-invalid input,
+    .donor-form-card .input-group.is-invalid select {
+      border-color: rgba(192, 74, 61, 0.7);
+      box-shadow: 0 0 0 0.22rem rgba(192, 74, 61, 0.12);
+    }
+
+    .donor-form-card .input-group input,
+    .donor-form-card .input-group select {
+      padding-top: 1.35rem;
+      padding-bottom: 0.6rem;
+    }
+
+    .donor-form-card .input-group.has-value label,
+    .donor-form-card .input-group input:focus + label,
+    .donor-form-card .input-group select:focus + label,
+    .donor-form-card .input-group select:valid + label {
+      top: 0;
+      transform: translateY(-50%);
+      font-size: 0.72rem;
+      font-weight: 800;
+      color: var(--brand);
+      background: rgba(255, 255, 255, 0.96);
+    }
+
+    .donor-form-card .input-group.is-invalid label {
+      color: #b42318;
+    }
+
+    .field-error {
+      display: block;
+      min-height: 1.15rem;
+      margin-top: 0.35rem;
+      padding-left: 0.15rem;
+      color: #b42318;
+      font-size: 0.78rem;
+      font-weight: 700;
+      line-height: 1.4;
+    }
+
+    .donor-form-card .btn-group {
+      margin-top: 0.25rem;
+    }
+
+    .donor-form-card .btn-main[disabled] {
+      opacity: 0.75;
+      cursor: wait;
+      transform: none;
+      box-shadow: 0 12px 24px rgba(93, 24, 33, 0.18);
+    }
+
+    .donor-status-card {
+      gap: 1.1rem;
+    }
+
+    .donor-status-summary {
+      display: grid;
+      grid-template-columns: repeat(3, minmax(0, 1fr));
+      gap: 0.85rem;
+    }
+
+    .donor-status-item {
+      display: grid;
+      gap: 0.3rem;
+      padding: 0.95rem 1rem;
+      border-radius: 1rem;
+      border: 1px solid rgba(93, 24, 33, 0.12);
+      background: rgba(255, 255, 255, 0.9);
+    }
+
+    .donor-status-item span {
+      color: var(--ink-soft);
+      font-size: 0.8rem;
+      font-weight: 700;
+      text-transform: uppercase;
+      letter-spacing: 0.04em;
+    }
+
+    .donor-status-item strong {
+      color: var(--brand-deep);
+      font-size: 1.05rem;
+    }
+
+    .donor-status-actions {
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+    }
+
+    @media (max-width: 720px) {
+      .donor-form-shell {
+        width: calc(100% - 1rem);
+        padding-top: 0.75rem;
+      }
+
+      .donor-status-summary,
+      .donor-status-actions,
+      .donor-form-card .form-row {
+        grid-template-columns: 1fr;
+      }
+    }
+  </style>
+</head>
+<body class="auth-page">
+
+<div class="page-bg">
+
+  <header class="navbar">
+    <div class="logo">BloodCare</div>
+  </header>
+
+  <section class="auth-container donor-form-shell">
+    <article class="auth-box auth-neo donor-status-card" id="donorStatusCard" hidden>
+      <div class="card-head">
+        <span class="badge" id="statusBadge">Donor</span>
+        <h2 id="statusTitle">Donor Profile</h2>
+        <p id="statusMessage">Your donor profile status will appear here.</p>
+      </div>
+
+      <div class="donor-status-summary" id="donorStatusSummary" hidden>
+        <div class="donor-status-item">
+          <span>Blood Group</span>
+          <strong id="statusBloodGroup">-</strong>
+        </div>
+        <div class="donor-status-item">
+          <span>City</span>
+          <strong id="statusCity">-</strong>
+        </div>
+        <div class="donor-status-item">
+          <span>Last Donation</span>
+          <strong id="statusLastDonation">-</strong>
+        </div>
+      </div>
+
+      <div class="btn-group donor-status-actions">
+        <a href="/donor-dashboard" class="btn btn-main" id="statusPrimaryLink">Open Dashboard</a>
+        <a href="/donor-profile" class="btn btn-outline" id="statusSecondaryLink">View Profile</a>
+      </div>
+    </article>
+
+    <form class="auth-box auth-neo donor-form-card" id="donorForm" novalidate>
+
+      <!-- BACK LINK -->
+      <a href="javascript:history.back()" class="back-link">Back</a>
+
+      <div class="card-head">
+        <span class="badge">Donor</span>
+        <h2>Complete Donor Profile</h2>
+        <p>Accurate details help save lives</p>
+      </div>
+
+      <!-- BLOOD GROUP -->
+      <div class="input-group">
+        <select id="bloodGroup" required>
+          <option value=""></option>
+          <option>A+</option><option>A-</option>
+          <option>B+</option><option>B-</option>
+          <option>AB+</option><option>AB-</option>
+          <option>O+</option><option>O-</option>
+        </select>
+        <label>Blood Group</label>
+        <small class="field-error" id="bloodGroupError" aria-live="polite"></small>
+      </div>
+
+      <!-- GENDER -->
+      <div class="input-group">
+        <select id="gender" required>
+          <option value=""></option>
+          <option value="MALE">Male</option>
+          <option value="FEMALE">Female</option>
+        </select>
+        <label>Gender</label>
+        <small class="field-error" id="genderError" aria-live="polite"></small>
+      </div>
+
+      <!-- AGE + WEIGHT -->
+      <div class="form-row">
+        <div class="input-group">
+          <input type="number" id="age" min="18" max="65" required>
+          <label>Age</label>
+          <small class="field-error" id="ageError" aria-live="polite"></small>
+        </div>
+
+        <div class="input-group">
+          <input type="number" id="weight" min="50" required>
+          <label>Weight (kg)</label>
+          <small class="field-error" id="weightError" aria-live="polite"></small>
+        </div>
+      </div>
+
+      <!-- CITY -->
+      <div class="input-group">
+        <select id="city" required>
+          <option value=""></option>
+          <option>Ahmedabad</option>
+          <option>Amreli</option>
+          <option>Anand</option>
+          <option>Aravalli</option>
+          <option>Banaskantha</option>
+          <option>Bharuch</option>
+          <option>Bhavnagar</option>
+          <option>Botad</option>
+          <option>Chhota Udepur</option>
+          <option>Dahod</option>
+          <option>Dang (Ahwa)</option>
+          <option>Devbhoomi Dwarka</option>
+          <option>Gandhinagar</option>
+          <option>Gir Somnath</option>
+          <option>Jamnagar</option>
+          <option>Junagadh</option>
+          <option>Kheda (Nadiad)</option>
+          <option>Kutch (Bhuj)</option>
+          <option>Mahisagar</option>
+          <option>Mehsana</option>
+          <option>Morbi</option>
+          <option>Narmada (Rajpipla)</option>
+          <option>Navsari</option>
+          <option>Panchmahal (Godhra)</option>
+          <option>Patan</option>
+          <option>Porbandar</option>
+          <option>Rajkot</option>
+          <option>Sabarkantha (Himmatnagar)</option>
+          <option>Surat</option>
+          <option>Surendranagar</option>
+          <option>Tapi (Vyara)</option>
+          <option>Vadodara</option>
+          <option>Valsad</option>
+        </select>
+        <label>City</label>
+        <small class="field-error" id="cityError" aria-live="polite"></small>
+      </div>
+
+      <!-- SMOKING -->
+      <div class="input-group">
+        <select id="smoking" required>
+          <option value=""></option>
+          <option value="NO">No</option>
+          <option value="YES">Yes</option>
+        </select>
+        <label>Do you smoke?</label>
+        <small class="field-error" id="smokingError" aria-live="polite"></small>
+      </div>
+
+      <!-- LAST DONATION -->
+      <div class="input-group">
+        <input type="date" id="lastDonation">
+        <label>Last Donation Date (optional)</label>
+        <small class="field-error" id="lastDonationError" aria-live="polite"></small>
+      </div>
+
+      <div class="btn-group">
+        <button type="submit" class="btn btn-main" id="saveDonorButton" data-default-label="Save & Continue">
+          Save & Continue
+        </button>
+      </div>
+
+    </form>
+  </section>
+
+</div>
+
+<!-- TOAST -->
+<div class="toast" id="toast"></div>
+
+<!-- JS -->
+<script th:src="@{/js/donor-form.js}"></script>
+
+</body>
+</html>
+

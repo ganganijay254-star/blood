@@ -1,0 +1,81 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Request Tracking | BloodCare</title>
+  <link rel="stylesheet" th:href="@{/css/common.css}">
+  <link rel="stylesheet" th:href="@{/css/dashboard.css}">
+  <link rel="stylesheet" th:href="@{/css/receiver.css}">
+</head>
+<body>
+<div class="page-bg">
+  <div class="blood-overlay"></div>
+
+  <header class="navbar">
+    <div class="logo">BloodCare</div>
+    <nav class="dashboard-nav">
+      <a th:href="@{/}">Home</a>
+      <a th:href="@{/medicine}">Medicines</a>
+      <a th:href="@{/leaderboard}">Leaderboard</a>
+      <a th:href="@{/about}">About</a>
+      <a th:href="@{/donor-dashboard}">Dashboard</a>
+      <a th:href="@{/donor-profile}">My Profile</a>
+    </nav>
+  </header>
+
+  <section class="receiver-shell">
+    <main class="dashboard-main">
+      <section class="dashboard-hero surface-card">
+        <div class="dashboard-hero__copy">
+          <span class="eyebrow">Receiver Tracking</span>
+          <h1>Track your blood request in real time</h1>
+          <p>
+            Follow request status, donor assignment, uploaded proof, and compatible
+            stock availability from the same dashboard-style workspace.
+          </p>
+        </div>
+
+        <div class="dashboard-hero__actions">
+          <a th:href="@{/receiver-form}" class="btn btn-main">New Request</a>
+          <a th:href="@{/donor-profile}" class="btn btn-outline">My Profile</a>
+        </div>
+      </section>
+
+      <section class="info-section">
+        <div class="section-head">
+          <span class="section-kicker">Live Status</span>
+          <h2>Request progress</h2>
+        </div>
+        <div id="trackContainer">
+          <p>Loading...</p>
+        </div>
+      </section>
+
+      <div class="dashboard-split receiver-layout">
+        <section class="info-section">
+          <div class="section-head">
+            <span class="section-kicker">Documents</span>
+            <h2>Medical proof</h2>
+          </div>
+          <div id="proofContainer"></div>
+        </section>
+
+        <section class="info-section">
+          <div class="section-head">
+            <span class="section-kicker">Availability</span>
+            <h2>Compatible stock</h2>
+          </div>
+          <div id="stockContainer"></div>
+        </section>
+      </div>
+    </main>
+  </section>
+</div>
+
+<div id="toast" class="toast"></div>
+
+<script th:src="@{/js/receiver-track.js}"></script>
+<script th:src="@{/js/chatbot-widget.js}"></script>
+</body>
+</html>
